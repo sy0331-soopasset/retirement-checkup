@@ -1,0 +1,681 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>은퇴준비 자가진단 체크리스트 | 숲파트너스</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Noto Sans KR', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background: linear-gradient(135deg, #1a4d2e 0%, #4f772d 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .container {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            max-width: 600px;
+            width: 100%;
+            padding: 30px 20px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .logo {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .logo-header {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            margin-bottom: 10px;
+        }
+
+        .logo-header img {
+            width: 100%;
+            max-width: 280px;
+            height: auto;
+        }
+
+        .logo h1 {
+            display: none;
+        }
+
+        .logo p {
+            color: #666;
+            font-size: 14px;
+        }
+
+        .progress-bar {
+            background: #e0e0e0;
+            height: 8px;
+            border-radius: 10px;
+            margin-bottom: 30px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            background: linear-gradient(90deg, #4caf50, #8bc34a);
+            height: 100%;
+            width: 0%;
+            transition: width 0.5s ease;
+            border-radius: 10px;
+        }
+
+        .progress-text {
+            text-align: center;
+            color: #666;
+            font-size: 14px;
+            margin-bottom: 20px;
+        }
+
+        .intro-screen, .question-screen, .result-screen {
+            display: none;
+        }
+
+        .intro-screen.active, .question-screen.active, .result-screen.active {
+            display: block;
+            animation: fadeIn 0.5s ease;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .intro-content {
+            text-align: center;
+        }
+
+        .intro-content h2 {
+            color: #333;
+            font-size: 24px;
+            margin-bottom: 20px;
+        }
+
+        .intro-content p {
+            color: #666;
+            line-height: 1.6;
+            margin-bottom: 30px;
+        }
+
+        .question-container h2 {
+            color: #333;
+            font-size: 20px;
+            line-height: 1.6;
+            margin-bottom: 40px;
+            min-height: 80px;
+        }
+
+        .button-group {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+        }
+
+        button {
+            padding: 15px 40px;
+            font-size: 16px;
+            font-weight: 600;
+            border: none;
+            border-radius: 50px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-family: inherit;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #4caf50, #8bc34a);
+            color: white;
+            box-shadow: 0 4px 15px rgba(76, 175, 80, 0.3);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(76, 175, 80, 0.4);
+        }
+
+        .btn-yes {
+            background: #4caf50;
+            color: white;
+            flex: 1;
+        }
+
+        .btn-yes:hover {
+            background: #45a049;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(76, 175, 80, 0.3);
+        }
+
+        .btn-no {
+            background: #f5f5f5;
+            color: #333;
+            flex: 1;
+        }
+
+        .btn-no:hover {
+            background: #e0e0e0;
+            transform: translateY(-2px);
+        }
+
+        .result-screen h2 {
+            color: #333;
+            font-size: 24px;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        .result-logo {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .result-logo img {
+            width: 100%;
+            max-width: 280px;
+            height: auto;
+        }
+
+        .score-display {
+            text-align: center;
+            margin: 30px 0;
+        }
+
+        .score-number {
+            font-size: 48px;
+            font-weight: 700;
+            color: #4caf50;
+        }
+
+        .score-label {
+            font-size: 18px;
+            color: #666;
+            margin-top: 10px;
+        }
+
+        .result-message {
+            background: #f8f9fa;
+            padding: 25px;
+            border-radius: 15px;
+            margin: 25px 0;
+            border-left: 4px solid #4caf50;
+        }
+
+        .result-message h3 {
+            color: #2d5016;
+            font-size: 20px;
+            margin-bottom: 15px;
+        }
+
+        .result-message p {
+            color: #666;
+            line-height: 1.8;
+            margin-bottom: 10px;
+        }
+
+        .abc-promotion {
+            background: linear-gradient(135deg, #2d5016, #4caf50);
+            color: white;
+            padding: 30px;
+            border-radius: 15px;
+            margin: 25px 0;
+        }
+
+        .abc-promotion h3 {
+            font-size: 22px;
+            margin-bottom: 15px;
+        }
+
+        .abc-promotion p {
+            line-height: 1.8;
+            margin-bottom: 10px;
+            opacity: 0.95;
+        }
+
+        .abc-highlight {
+            background: rgba(255,255,255,0.2);
+            padding: 15px;
+            border-radius: 10px;
+            margin-top: 15px;
+        }
+
+        .abc-highlight strong {
+            font-size: 24px;
+            display: block;
+            margin-bottom: 5px;
+        }
+
+        .contact-form {
+            margin-top: 30px;
+            padding: 25px;
+            background: #f8f9fa;
+            border-radius: 15px;
+        }
+
+        .contact-form h3 {
+            color: #333;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        .form-group label {
+            display: block;
+            color: #666;
+            margin-bottom: 8px;
+            font-size: 14px;
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 12px 15px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            font-size: 14px;
+            font-family: inherit;
+        }
+
+        .form-group input:focus {
+            outline: none;
+            border-color: #4caf50;
+        }
+
+        .btn-restart {
+            background: #666;
+            color: white;
+            margin-top: 20px;
+        }
+
+        .btn-restart:hover {
+            background: #555;
+        }
+
+        .footer {
+            text-align: center;
+            margin-top: 30px;
+            padding-top: 20px;
+            border-top: 1px solid #e0e0e0;
+            color: #999;
+            font-size: 12px;
+        }
+
+        .footer a {
+            color: #4caf50;
+            text-decoration: none;
+        }
+
+        .footer a:hover {
+            text-decoration: underline;
+        }
+
+        @media (max-width: 480px) {
+            body {
+                padding: 15px;
+            }
+
+            .container {
+                padding: 20px 15px;
+                border-radius: 15px;
+            }
+
+            .logo-header img {
+                max-width: 240px;
+            }
+
+            .logo p {
+                font-size: 13px;
+            }
+
+            .intro-content h2 {
+                font-size: 20px;
+            }
+
+            .question-container h2 {
+                font-size: 17px;
+                min-height: 70px;
+                margin-bottom: 30px;
+            }
+
+            button {
+                padding: 12px 25px;
+                font-size: 15px;
+            }
+
+            .result-screen h2 {
+                font-size: 20px;
+            }
+
+            .score-number {
+                font-size: 40px;
+            }
+
+            .score-label {
+                font-size: 16px;
+            }
+
+            .result-message h3 {
+                font-size: 18px;
+            }
+
+            .result-logo img {
+                width: 100%;
+                max-width: 240px;
+            }
+        }
+
+        @media (max-width: 360px) {
+            .container {
+                padding: 15px 10px;
+            }
+
+            .logo-header img {
+                max-width: 200px;
+            }
+
+            .question-container h2 {
+                font-size: 16px;
+                min-height: 65px;
+            }
+
+            button {
+                padding: 10px 20px;
+                font-size: 14px;
+            }
+
+            .result-logo img {
+                max-width: 200px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="logo">
+            <div class="logo-header">
+                <img src="logo-main.png" alt="숲파트너스 로고">
+                <h1>숲파트너스</h1>
+            </div>
+            <p>안정적인 은퇴를 위한 파트너</p>
+        </div>
+
+        <!-- 시작 화면 -->
+        <div class="intro-screen active">
+            <div class="intro-content">
+                <h2>은퇴준비 자가진단 체크리스트</h2>
+                <p>
+                    나의 은퇴준비 상태를 점검해보세요.<br>
+                    8가지 질문으로 현재 상태를 진단하고,<br>
+                    맞춤 솔루션을 제안해드립니다.
+                </p>
+                <button class="btn-primary" onclick="startDiagnosis()">진단 시작하기</button>
+            </div>
+        </div>
+
+        <!-- 질문 화면 -->
+        <div class="question-screen">
+            <div class="progress-bar">
+                <div class="progress-fill" id="progressFill"></div>
+            </div>
+            <div class="progress-text" id="progressText">1 / 8</div>
+            
+            <div class="question-container">
+                <h2 id="questionText"></h2>
+                <div class="button-group">
+                    <button class="btn-yes" onclick="answer(true)">예</button>
+                    <button class="btn-no" onclick="answer(false)">아니오</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- 결과 화면 -->
+        <div class="result-screen">
+            <h2>진단 결과</h2>
+            
+            <div class="score-display">
+                <div class="score-number" id="scoreNumber">0</div>
+                <div class="score-label">/ 8개 항목 준비됨</div>
+            </div>
+
+            <div class="result-message" id="resultMessage"></div>
+
+            <div class="abc-promotion" id="abcPromotion"></div>
+
+            <div class="contact-form">
+                <h3>📞 무료 은퇴설계 상담 신청</h3>
+                
+                <!-- 개인정보 수집 동의 -->
+                <div style="background: #f8f9fa; padding: 20px; border-radius: 10px; margin-bottom: 20px; border: 1px solid #e0e0e0;">
+                    <h4 style="margin: 0 0 15px 0; font-size: 14px; color: #333; font-weight: 600;">개인정보 수집 및 이용 동의</h4>
+                    <div style="font-size: 13px; color: #666; line-height: 1.8; margin-bottom: 15px;">
+                        <p style="margin: 5px 0;"><strong>■ 수집 항목:</strong> 이름, 연락처, 이메일, 진단점수</p>
+                        <p style="margin: 5px 0;"><strong>■ 수집 목적:</strong> 은퇴설계 상담 서비스 제공</p>
+                        <p style="margin: 5px 0;"><strong>■ 보유 기간:</strong> 상담 완료 후 1년</p>
+                        <p style="margin: 5px 0;"><strong>■ 거부 권리:</strong> 동의를 거부할 권리가 있으며, 거부 시 상담 서비스 이용이 제한됩니다.</p>
+                    </div>
+                    <label style="display: flex; align-items: center; cursor: pointer;">
+                        <input type="checkbox" id="privacyAgree" style="width: 18px; height: 18px; margin-right: 8px; cursor: pointer;">
+                        <span style="font-size: 14px; color: #333;">[필수] 위 내용을 확인하였으며 동의합니다.</span>
+                    </label>
+                </div>
+
+                <form id="consultationForm">
+                    <div class="form-group">
+                        <label>이름 *</label>
+                        <input type="text" name="이름" id="userName" placeholder="홍길동" required>
+                    </div>
+                    <div class="form-group">
+                        <label>연락처 *</label>
+                        <input type="tel" name="연락처" id="userPhone" placeholder="010-0000-0000" required>
+                    </div>
+                    <div class="form-group">
+                        <label>이메일</label>
+                        <input type="email" name="이메일" id="userEmail" placeholder="example@email.com">
+                    </div>
+                    <input type="hidden" name="진단점수" id="formScore">
+                    <button type="submit" class="btn-primary" style="width: 100%;">상담 신청하기</button>
+                </form>
+            </div>
+
+            <button class="btn-restart" style="width: 100%;" onclick="restart()">다시 진단하기</button>
+
+            <div class="footer">
+                <p>© 2026 주식회사 숲파트너스. All rights reserved.</p>
+                <p><a href="https://www.soop-partners.com" target="_blank">www.soop-partners.com</a></p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const questions = [
+            "은퇴 후 매달 필요한 최소 생활비를 계산해 보셨나요?",
+            "국민연금, 퇴직연금, 개인연금의 예상 수령액을 알고 계신가요?",
+            "은퇴 후 거주할 주택에 대한 처분 또는 유지 계획이 있으신가요?",
+            "갑작스러운 질병에 대비한 보장성 보험 리모델링을 마치셨나요?",
+            "현금화 가능한 유동 자산 비중이 적절하신가요? (전체 자산의 약 20%)",
+            "취미 생활이나 사회 활동을 위한 비재무적 계획이 있으신가요?",
+            "자녀 지원(결혼, 교육)과 내 노후 자산 사이의 균형을 맞추셨나요?",
+            "증여세나 상속세 등 세금 문제에 대한 기초적인 진단을 받으셨나요?"
+        ];
+
+        let currentQuestion = 0;
+        let score = 0;
+
+        function startDiagnosis() {
+            document.querySelector('.intro-screen').classList.remove('active');
+            document.querySelector('.question-screen').classList.add('active');
+            showQuestion();
+        }
+
+        function showQuestion() {
+            if (currentQuestion < questions.length) {
+                document.getElementById('questionText').textContent = questions[currentQuestion];
+                document.getElementById('progressText').textContent = `${currentQuestion + 1} / ${questions.length}`;
+                const progress = ((currentQuestion + 1) / questions.length) * 100;
+                document.getElementById('progressFill').style.width = progress + '%';
+            }
+        }
+
+        function answer(isYes) {
+            if (isYes) score++;
+            currentQuestion++;
+
+            if (currentQuestion < questions.length) {
+                showQuestion();
+            } else {
+                showResult();
+            }
+        }
+
+        function showResult() {
+            document.querySelector('.question-screen').classList.remove('active');
+            document.querySelector('.result-screen').classList.add('active');
+            
+            document.getElementById('scoreNumber').textContent = score;
+            
+            // 진단 점수를 폼의 hidden 필드에 저장
+            document.getElementById('formScore').value = score + '점 / 8점';
+
+            const resultMessage = document.getElementById('resultMessage');
+            const abcPromotion = document.getElementById('abcPromotion');
+
+            if (score >= 0 && score <= 2) {
+                resultMessage.innerHTML = `
+                    <h3>⚠️ 은퇴준비 시급 단계</h3>
+                    <p>현재 은퇴준비가 매우 부족한 상태입니다. 체계적인 은퇴설계가 시급히 필요합니다.</p>
+                    <p>지금 시작하면 충분히 안정적인 노후를 준비할 수 있습니다.</p>
+                `;
+                abcPromotion.innerHTML = `
+                    <h3>💡 숲파트너스 ABC투자 솔루션</h3>
+                    <p>은퇴준비가 부족하신 분들을 위한 <strong>안정적이고 예측 가능한</strong> 투자 상품입니다.</p>
+                    <div class="abc-highlight">
+                        <strong>연 8% 고정 수익률</strong>
+                        <p>매달 안정적인 현금흐름을 만들어드립니다</p>
+                    </div>
+                    <p style="margin-top: 15px;">✓ 아파트 담보대출 채권 투자<br>
+                       ✓ 투자자 개인별로 우선 순위 질권 설정<br>
+                       ✓ 매월 확정된 이자 지급<br>
+                       ✓ 근저당권 질권 설정으로 명확한 담보권 확보<br>
+                       ✓ 계약 당시 확정된 금리로 명확한 수익률 예측 가능</p>
+                `;
+            } else if (score >= 3 && score <= 5) {
+                resultMessage.innerHTML = `
+                    <h3>📊 은퇴준비 보완 필요 단계</h3>
+                    <p>기본적인 은퇴준비는 되어있으나, 몇 가지 보완이 필요합니다.</p>
+                    <p>특히 안정적인 현금흐름 자산 확보가 중요합니다.</p>
+                `;
+                abcPromotion.innerHTML = `
+                    <h3>💡 숲파트너스 ABC투자 솔루션</h3>
+                    <p>은퇴 후 <strong>안정적인 월급</strong>처럼 받을 수 있는 현금흐름 자산을 만들어드립니다.</p>
+                    <div class="abc-highlight">
+                        <strong>연 8% 고정 수익률</strong>
+                        <p>1억 투자 시 월 세후 약 50만원 수령</p>
+                        <p style="font-size: 12px; color: #e8f5e9; margin-top: 8px; line-height: 1.4;">(기간 및 투자 금액에 따라 투자 수익이 상이할 수 있습니다.)</p>
+                    </div>
+                    <p style="margin-top: 15px;">✓ 아파트 담보대출 채권 투자<br>
+                       ✓ 투자자 개인별로 우선 순위 질권 설정<br>
+                       ✓ 매월 확정된 이자 지급<br>
+                       ✓ 근저당권 질권 설정으로 명확한 담보권 확보<br>
+                       ✓ 계약 당시 확정된 금리로 명확한 수익률 예측 가능</p>
+                `;
+            } else if (score >= 6 && score <= 8) {
+                resultMessage.innerHTML = `
+                    <h3>✅ 은퇴준비 양호 단계</h3>
+                    <p>은퇴준비가 잘 되어있습니다! 현재 상태를 잘 유지하시면 됩니다.</p>
+                    <p>추가로 안정적인 수익 자산을 보강하면 더욱 완벽해집니다.</p>
+                `;
+                abcPromotion.innerHTML = `
+                    <h3>💡 숲파트너스 ABC투자 솔루션</h3>
+                    <p>잘 준비된 은퇴자산에 <strong>안정성을 더하는</strong> 투자를 추천드립니다.</p>
+                    <div class="abc-highlight">
+                        <strong>연 8% 고정 수익률</strong>
+                        <p>변동성 없는 안정적 수익 추구</p>
+                    </div>
+                    <p style="margin-top: 15px;">✓ 아파트 담보대출 채권 투자<br>
+                       ✓ 투자자 개인별로 우선 순위 질권 설정<br>
+                       ✓ 매월 확정된 이자 지급<br>
+                       ✓ 근저당권 질권 설정으로 명확한 담보권 확보<br>
+                       ✓ 계약 당시 확정된 금리로 명확한 수익률 예측 가능</p>
+                `;
+            }
+        }
+
+        function restart() {
+            currentQuestion = 0;
+            score = 0;
+            document.querySelector('.result-screen').classList.remove('active');
+            document.querySelector('.intro-screen').classList.add('active');
+        }
+
+        // Google Forms 제출 처리
+        document.getElementById('consultationForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            // 개인정보 동의 체크 확인
+            if (!document.getElementById('privacyAgree').checked) {
+                alert('개인정보 수집 및 이용에 동의해주세요.');
+                return;
+            }
+
+            const name = document.getElementById('userName').value;
+            const phone = document.getElementById('userPhone').value;
+            const email = document.getElementById('userEmail').value;
+            const scoreValue = document.getElementById('formScore').value;
+
+            // Google Forms URL
+            const googleFormsUrl = 'https://docs.google.com/forms/d/e/1FAIpQLSfbO5K3Bj1SeqzohuTVGMiJX9xTHDdmT9N_b7XqrExQgMZwyg/formResponse';
+            
+            // Google Forms 필드 ID
+            const formData = new FormData();
+            formData.append('entry.184967131', name); // 이름
+            formData.append('entry.1004155108', phone); // 연락처
+            formData.append('entry.1887756782', email || '미입력'); // 이메일
+            formData.append('entry.1542610737', scoreValue); // 진단점수
+
+            // Google Forms에 제출
+            fetch(googleFormsUrl, {
+                method: 'POST',
+                mode: 'no-cors',
+                body: formData
+            }).then(() => {
+                alert(`${name}님, 상담 신청이 완료되었습니다.\n곧 연락드리겠습니다.`);
+                // 폼 초기화
+                document.getElementById('userName').value = '';
+                document.getElementById('userPhone').value = '';
+                document.getElementById('userEmail').value = '';
+                document.getElementById('privacyAgree').checked = false;
+            }).catch(() => {
+                alert('상담 신청이 완료되었습니다.');
+                // 폼 초기화
+                document.getElementById('userName').value = '';
+                document.getElementById('userPhone').value = '';
+                document.getElementById('userEmail').value = '';
+                document.getElementById('privacyAgree').checked = false;
+            });
+        });
+    </script>
+</body>
+</html>
