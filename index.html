@@ -1,0 +1,1108 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>은퇴준비 자가진단 체크리스트 | 숲파트너스</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/static/pretendard.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Pretendard', 'Noto Sans KR', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background: linear-gradient(135deg, #053c3c 0%, #0a5555 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .container {
+            background: #e0dbd1;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(5, 60, 60, 0.4);
+            max-width: 600px;
+            width: 100%;
+            padding: 30px 20px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .logo {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .logo-header {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            margin-bottom: 10px;
+        }
+
+        .logo-header img {
+            width: 100%;
+            max-width: 280px;
+            height: auto;
+        }
+
+        .logo h1 {
+            display: none;
+        }
+
+        .logo p {
+            color: #666;
+            font-size: 14px;
+            font-weight: 600;
+        }
+
+        .progress-bar {
+            background: #d0cbc1;
+            height: 8px;
+            border-radius: 10px;
+            margin-bottom: 30px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            background: linear-gradient(90deg, #053c3c, #0a5555);
+            height: 100%;
+            width: 0%;
+            transition: width 0.5s ease;
+            border-radius: 10px;
+        }
+
+        .progress-text {
+            text-align: center;
+            color: #666;
+            font-size: 14px;
+            margin-bottom: 20px;
+            font-weight: 600;
+        }
+
+        .intro-screen, .question-screen, .result-screen {
+            display: none;
+        }
+
+        .intro-screen.active, .question-screen.active, .result-screen.active {
+            display: block;
+            animation: fadeIn 0.5s ease;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .intro-content {
+            text-align: center;
+        }
+
+        .intro-content h2 {
+            color: #053c3c;
+            font-size: 24px;
+            margin-bottom: 20px;
+            font-weight: 700;
+        }
+
+        .intro-content p {
+            color: #555;
+            line-height: 1.6;
+            margin-bottom: 30px;
+            font-weight: 500;
+        }
+
+        .question-container h2 {
+            color: #053c3c;
+            font-size: 20px;
+            line-height: 1.6;
+            margin-bottom: 30px;
+            min-height: 60px;
+            font-weight: 700;
+        }
+
+        .answer-group {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .answer-button {
+            padding: 18px 20px;
+            font-size: 16px;
+            font-weight: 600;
+            border: 2px solid #d0cbc1;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-family: 'Pretendard', inherit;
+            background: white;
+            color: #555;
+            text-align: left;
+        }
+
+        .answer-button:hover {
+            border-color: #053c3c;
+            background: #f5f5f0;
+            transform: translateX(5px);
+        }
+
+        .answer-button:active {
+            transform: scale(0.98);
+        }
+
+        button {
+            padding: 15px 40px;
+            font-size: 16px;
+            font-weight: 700;
+            border: none;
+            border-radius: 50px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-family: 'Pretendard', inherit;
+        }
+
+        .btn-primary {
+            background: #053c3c;
+            color: #e0dbd1;
+            box-shadow: 0 4px 15px rgba(5, 60, 60, 0.3);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(5, 60, 60, 0.4);
+            background: #0a5555;
+        }
+
+        /* ========== 나무 성장 3단계 스타일 ========== */
+        .result-logo {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .result-logo img {
+            width: 100%;
+            max-width: 150px;
+            height: auto;
+        }
+
+        .forest-result {
+            text-align: center;
+            padding: 25px 20px;
+            border-radius: 15px;
+            margin-bottom: 20px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        /* 씨앗 단계 */
+        .forest-result.seed-stage {
+            background: linear-gradient(135deg, #E8F5E9 0%, #C8E6C9 100%);
+        }
+
+        /* 성장 단계 */
+        .forest-result.grow-stage {
+            background: linear-gradient(135deg, #C8E6C9 0%, #81C784 100%);
+        }
+
+        /* 숲 단계 */
+        .forest-result.forest-stage {
+            background: linear-gradient(135deg, #66BB6A 0%, #43A047 100%);
+        }
+
+        .tree-icon {
+            font-size: 70px;
+            margin-bottom: 15px;
+            animation: grow-tree 1.5s ease-out;
+        }
+
+        @keyframes grow-tree {
+            0% {
+                transform: scale(0) translateY(20px);
+                opacity: 0;
+            }
+            60% {
+                transform: scale(1.1) translateY(-10px);
+            }
+            100% {
+                transform: scale(1) translateY(0);
+                opacity: 1;
+            }
+        }
+
+        .stage-name {
+            font-size: 26px;
+            font-weight: 700;
+            margin-bottom: 10px;
+            color: #2E7D32;
+        }
+
+        .forest-result.forest-stage .stage-name {
+            color: white;
+        }
+
+        .stage-tagline {
+            font-size: 15px;
+            font-weight: 500;
+            margin-bottom: 20px;
+            color: #1B5E20;
+        }
+
+        .forest-result.forest-stage .stage-tagline {
+            color: rgba(255, 255, 255, 0.95);
+        }
+
+        /* 진행 표시 */
+        .forest-progress {
+            margin: 20px 0;
+            padding: 15px 0;
+        }
+
+        .progress-track {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: relative;
+            max-width: 300px;
+            margin: 0 auto;
+        }
+
+        .progress-track::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 15%;
+            right: 15%;
+            height: 3px;
+            background: rgba(0, 0, 0, 0.1);
+            transform: translateY(-50%);
+        }
+
+        .checkpoint {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 8px;
+            position: relative;
+            z-index: 2;
+        }
+
+        .checkpoint-icon {
+            opacity: 0.2;  /* 0.3 → 0.2로 더 흐리게 */
+            transition: all 0.3s ease;
+            filter: grayscale(50%);  /* 회색조 추가 */
+        }
+
+        /* 단계별로 크기 다르게 */
+        .checkpoint:nth-child(1) .checkpoint-icon {
+            font-size: 28px;  /* 씨앗 - 작게 */
+        }
+
+        .checkpoint:nth-child(2) .checkpoint-icon {
+            font-size: 34px;  /* 나무 - 중간 */
+        }
+
+        .checkpoint:nth-child(3) .checkpoint-icon {
+            font-size: 40px;  /* 숲 - 크게 */
+        }
+
+        .checkpoint.active .checkpoint-icon {
+            opacity: 1;
+            filter: grayscale(0%);  /* 활성화되면 컬러 */
+            transform: scale(1.1);
+        }
+
+        .checkpoint-dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background: rgba(0, 0, 0, 0.15);  /* 0.2 → 0.15로 더 흐리게 */
+        }
+
+        .checkpoint.active .checkpoint-dot {
+            background: #2E7D32;
+            box-shadow: 0 0 10px rgba(46, 125, 50, 0.5);
+        }
+
+        .forest-result.forest-stage .checkpoint.active .checkpoint-dot {
+            background: white;
+            box-shadow: 0 0 10px rgba(255, 255, 255, 0.7);
+        }
+
+        .stage-description {
+            font-size: 14px;
+            line-height: 1.6;
+            color: #2E7D32;
+            margin-bottom: 15px;
+        }
+
+        .forest-result.forest-stage .stage-description {
+            color: rgba(255, 255, 255, 0.95);
+        }
+
+        .result-message {
+            background: white;
+            padding: 20px;
+            border-radius: 12px;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+
+        .result-message h3 {
+            color: #053c3c;
+            font-size: 18px;
+            margin-bottom: 12px;
+            font-weight: 700;
+        }
+
+        .result-message p {
+            color: #555;
+            line-height: 1.7;
+            margin-bottom: 8px;
+            font-weight: 500;
+            font-size: 14px;
+        }
+
+        .consultation-form {
+            background: white;
+            padding: 20px;
+            border-radius: 12px;
+            margin-bottom: 15px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            color: #053c3c;
+            font-weight: 600;
+            margin-bottom: 8px;
+            font-size: 14px;
+        }
+
+        .form-group input,
+        .form-group select {
+            width: 100%;
+            padding: 12px 15px;
+            border: 2px solid #d0cbc1;
+            border-radius: 8px;
+            font-size: 15px;
+            font-family: 'Pretendard', inherit;
+            transition: border-color 0.3s ease;
+        }
+
+        .form-group input:focus,
+        .form-group select:focus {
+            outline: none;
+            border-color: #053c3c;
+        }
+
+        .checkbox-group {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-top: 8px;
+        }
+
+        .checkbox-item {
+            display: flex;
+            align-items: center;
+        }
+
+        .checkbox-item input[type="checkbox"] {
+            width: 18px;
+            height: 18px;
+            margin-right: 6px;
+            cursor: pointer;
+        }
+
+        .checkbox-item label {
+            font-size: 14px;
+            color: #333;
+            cursor: pointer;
+            margin: 0;
+            font-weight: 500;
+        }
+
+        .privacy-notice {
+            background: #f8f8f8;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            border: 1px solid #e0e0e0;
+        }
+
+        .privacy-notice h4 {
+            color: #053c3c;
+            font-size: 16px;
+            margin-bottom: 12px;
+            font-weight: 700;
+        }
+
+        .privacy-notice p {
+            font-size: 13px;
+            line-height: 1.6;
+            color: #555;
+        }
+
+        .legal-notice {
+            background: #FFF3E0;
+            border-left: 4px solid #FF9800;
+            padding: 15px 20px;
+            margin-bottom: 20px;
+            border-radius: 8px;
+        }
+
+        .legal-notice p {
+            font-size: 13px;
+            line-height: 1.6;
+            color: #E65100;
+            margin: 5px 0;
+        }
+
+        .btn-restart {
+            background: #d0cbc1;
+            color: #053c3c;
+            margin-bottom: 20px;
+        }
+
+        .btn-restart:hover {
+            background: #c0bbb1;
+            transform: translateY(-2px);
+        }
+
+        .footer {
+            text-align: center;
+            color: #666;
+            font-size: 12px;
+            margin-top: 30px;
+            padding-top: 20px;
+            border-top: 1px solid #d0cbc1;
+        }
+
+        .footer p {
+            margin: 5px 0;
+        }
+
+        .footer a {
+            color: #053c3c;
+            text-decoration: none;
+            font-weight: 600;
+        }
+
+        .footer a:hover {
+            text-decoration: underline;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 20px 15px;
+            }
+
+            .question-container h2 {
+                font-size: 18px;
+                min-height: 50px;
+            }
+
+            .answer-button {
+                padding: 15px;
+                font-size: 15px;
+            }
+
+            .tree-icon {
+                font-size: 80px;
+            }
+
+            .stage-name {
+                font-size: 28px;
+            }
+
+            .result-message, .consultation-form {
+                padding: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- 시작 화면 -->
+        <div class="intro-screen active">
+            <div class="logo">
+                <div class="logo-header">
+                    <img src="logo_transparent.png" alt="숲파트너스 로고">
+                </div>
+                <h1>은퇴준비 자가진단 체크리스트</h1>
+                <p>나의 은퇴준비 상태를 확인해보세요</p>
+            </div>
+            
+            <div class="intro-content">
+                <h2>🌳 은퇴준비 자가진단</h2>
+                <p>8가지 질문으로 현재 나의 은퇴준비 상태를 확인하고,<br>맞춤형 솔루션을 제안받아보세요.</p>
+                <button class="btn-primary" onclick="startDiagnosis()">진단 시작하기</button>
+            </div>
+        </div>
+
+        <!-- 질문 화면 -->
+        <div class="question-screen">
+            <div class="logo">
+                <div class="logo-header">
+                    <img src="logo_transparent.png" alt="숲파트너스 로고">
+                </div>
+            </div>
+
+            <div class="progress-text" id="progressText">1 / 8</div>
+            <div class="progress-bar">
+                <div class="progress-fill" id="progressFill"></div>
+            </div>
+
+            <div class="question-container">
+                <h2 id="questionText"></h2>
+                <div class="answer-group" id="answerGroup"></div>
+            </div>
+        </div>
+
+        <!-- 결과 화면 -->
+        <div class="result-screen">
+            <div class="result-logo">
+                <img src="logo_transparent.png" alt="숲파트너스 로고">
+            </div>
+
+            <!-- 나무 성장 단계 표시 -->
+            <div class="forest-result" id="forestResult">
+                <div class="tree-icon" id="treeIcon">🌱</div>
+                <h2 class="stage-name" id="stageName">씨앗 단계</h2>
+                <p class="stage-tagline" id="stageTagline">은퇴준비의 씨앗을 뿌릴 때입니다</p>
+
+                <div class="forest-progress">
+                    <div class="progress-track">
+                        <div class="checkpoint" id="checkpoint1">
+                            <div class="checkpoint-icon">🌱</div>
+                            <div class="checkpoint-dot"></div>
+                        </div>
+                        <div class="checkpoint" id="checkpoint2">
+                            <div class="checkpoint-icon">🌲</div>
+                            <div class="checkpoint-dot"></div>
+                        </div>
+                        <div class="checkpoint" id="checkpoint3">
+                            <div class="checkpoint-icon">🌳</div>
+                            <div class="checkpoint-dot"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="stage-description" id="stageDescription">
+                    지금은 씨앗 단계지만,<br>
+                    지금 심으면 충분히 풍요로운 숲을 만들 수 있습니다.
+                </div>
+            </div>
+
+            <div class="result-message" id="resultMessage">
+                <!-- 결과 메시지가 여기에 표시됩니다 -->
+            </div>
+
+            <!-- 법적 고지 추가 -->
+            <div class="legal-notice">
+                <p><strong>⚠️ 투자 유의사항</strong></p>
+                <p>• 본 진단 결과는 참고용이며, 투자 권유가 아닙니다.</p>
+                <p>• 투자 결정 전 반드시 전문가와 상담하시기 바랍니다.</p>
+                <p>• 투자자의 투자 목적, 재산 상황에 따라 적합하지 않을 수 있습니다.</p>
+            </div>
+
+            <div class="consultation-form">
+                <h3 style="color: #053c3c; margin-bottom: 20px; font-size: 20px; font-weight: 700;">📞 무료 상담 신청</h3>
+                <p style="color: #666; margin-bottom: 20px; font-size: 14px; line-height: 1.6;">
+                    전문가와의 1:1 맞춤 상담을 통해<br>더 구체적인 은퇴설계를 시작해보세요.
+                </p>
+
+                <form id="consultationForm">
+                    <div class="privacy-notice">
+                        <h4>개인정보 수집 및 이용 안내</h4>
+                        <div style="font-size: 13px; line-height: 1.8; color: #555;">
+                            <p style="margin: 5px 0;"><strong>■ 수집 항목:</strong> 이름, 연락처, 이메일, 연령대, 자산규모, 진단점수, 유입경로, 희망서비스</p>
+                            <p style="margin: 5px 0;"><strong>■ 수집 목적:</strong> 은퇴설계 상담 서비스 제공</p>
+                            <p style="margin: 5px 0;"><strong>■ 보유 기간:</strong> 상담 완료 후 1년</p>
+                            <p style="margin: 5px 0;"><strong>■ 거부 권리:</strong> 동의를 거부할 권리가 있으며, 거부 시 상담 서비스 이용이 제한됩니다.</p>
+                        </div>
+                        <label style="display: flex; align-items: center; cursor: pointer; margin-top: 15px;">
+                            <input type="checkbox" id="privacyAgree" style="width: 18px; height: 18px; margin-right: 8px; cursor: pointer;">
+                            <span style="font-size: 14px; color: #333; font-weight: 600;">[필수] 위 내용을 확인하였으며 동의합니다.</span>
+                        </label>
+                    </div>
+
+                    <div class="form-group">
+                        <label>이름 (필수)</label>
+                        <input type="text" name="이름" id="userName" placeholder="홍길동" required>
+                    </div>
+                    <div class="form-group">
+                        <label>연락처 (필수)</label>
+                        <input type="tel" name="연락처" id="userPhone" placeholder="010-0000-0000" required>
+                    </div>
+                    <div class="form-group">
+                        <label>이메일</label>
+                        <input type="email" name="이메일" id="userEmail" placeholder="example@email.com">
+                    </div>
+
+                    <!-- 연령대 추가 -->
+                    <div class="form-group">
+                        <label>연령대</label>
+                        <select name="연령대" id="userAge">
+                            <option value="">선택하세요</option>
+                            <option value="30대">30대</option>
+                            <option value="40대">40대</option>
+                            <option value="50대">50대</option>
+                            <option value="60대">60대</option>
+                            <option value="70대 이상">70대 이상</option>
+                        </select>
+                    </div>
+
+                    <!-- 투자 가능 자산 규모 추가 -->
+                    <div class="form-group">
+                        <label>투자 가능 자산 규모</label>
+                        <select name="자산규모" id="userAsset">
+                            <option value="">선택하세요</option>
+                            <option value="5천만원 미만">5천만원 미만</option>
+                            <option value="5천만원~1억원">5천만원~1억원</option>
+                            <option value="1억원~3억원">1억원~3억원</option>
+                            <option value="3억원~5억원">3억원~5억원</option>
+                            <option value="5억원 이상">5억원 이상</option>
+                            <option value="답변 안 함">답변 안 함</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>어디서 알고 오셨나요?</label>
+                        <select name="유입경로" id="userReferral">
+                            <option value="">선택하세요</option>
+                            <option value="검색">검색</option>
+                            <option value="광고">광고</option>
+                            <option value="유튜브">유튜브</option>
+                            <option value="지인소개">지인소개</option>
+                            <option value="SNS">SNS</option>
+                            <option value="기타">기타</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label>상담 희망 서비스</label>
+                        <div class="checkbox-group">
+                            <div class="checkbox-item">
+                                <input type="checkbox" id="service1" value="은퇴준비">
+                                <label for="service1">은퇴준비</label>
+                            </div>
+                            <div class="checkbox-item">
+                                <input type="checkbox" id="service2" value="세무서비스">
+                                <label for="service2">세무서비스</label>
+                            </div>
+                            <div class="checkbox-item">
+                                <input type="checkbox" id="service3" value="법무서비스">
+                                <label for="service3">법무서비스</label>
+                            </div>
+                            <div class="checkbox-item">
+                                <input type="checkbox" id="service4" value="기업서비스">
+                                <label for="service4">기업서비스</label>
+                            </div>
+                            <div class="checkbox-item">
+                                <input type="checkbox" id="service5" value="자산관리">
+                                <label for="service5">자산관리</label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <input type="hidden" name="진단점수" id="formScore">
+                    <input type="hidden" name="문항1" id="question1Answer">
+                    <input type="hidden" name="문항2" id="question2Answer">
+                    <input type="hidden" name="문항3" id="question3Answer">
+                    <input type="hidden" name="문항4" id="question4Answer">
+                    <input type="hidden" name="문항5" id="question5Answer">
+                    <input type="hidden" name="문항6" id="question6Answer">
+                    <input type="hidden" name="문항7" id="question7Answer">
+                    <input type="hidden" name="문항8" id="question8Answer">
+
+                    <button type="submit" class="btn-primary" style="width: 100%;">상담 신청하기</button>
+                </form>
+            </div>
+
+            <button class="btn-restart" style="width: 100%;" onclick="restart()">다시 진단하기</button>
+
+            <div class="footer">
+                <p>© 2026 주식회사 숲파트너스. All rights reserved.</p>
+                <p><a href="https://www.soop-partners.com" target="_blank">www.soop-partners.com</a></p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const questions = [
+            {
+                question: "💰 은퇴 후 매달 필요한 생활비는 얼마라고 생각하시나요?",
+                answers: [
+                    { text: "① 월 400만원 이상", score: 2 },
+                    { text: "② 월 300~400만원", score: 2 },
+                    { text: "③ 월 200~300만원", score: 1 },
+                    { text: "④ 월 200만원 이하", score: 1 },
+                    { text: "⑤ 아직 생각해본 적 없다", score: 0 }
+                ]
+            },
+            {
+                question: "📊 국민연금 + 퇴직연금 + 개인연금 합쳐서 매달 얼마 받을 예정인가요?",
+                answers: [
+                    { text: "① 월 300만원 이상", score: 2 },
+                    { text: "② 월 200~300만원", score: 2 },
+                    { text: "③ 월 100~200만원", score: 1 },
+                    { text: "④ 월 100만원 미만", score: 1 },
+                    { text: "⑤ 확인해본 적 없다", score: 0 }
+                ]
+            },
+            {
+                question: "💡 연금으로 부족한 생활비는 어떻게 채울 계획인가요?",
+                answers: [
+                    { text: "① 배당·임대수입 등 매달 들어오는 수입이 따로 있다", score: 2 },
+                    { text: "② 예금 이자나 연금저축 인출로 보충할 계획이다", score: 2 },
+                    { text: "③ 퇴직금이나 적금을 조금씩 쓸 생각이다", score: 1 },
+                    { text: "④ 아직 구체적 계획은 없지만 일을 계속할 생각이다", score: 1 },
+                    { text: "⑤ 생각해본 적 없다", score: 0 }
+                ]
+            },
+            {
+                question: "🏠 은퇴 후 어디서 지내고 싶으신가요?",
+                answers: [
+                    { text: "① 시니어 레지던스/타운", score: 2 },
+                    { text: "② 집을 팔고 작은 집으로", score: 2 },
+                    { text: "③ 지금 집 계속 살기", score: 1 },
+                    { text: "④ 막연히 생각만", score: 1 },
+                    { text: "⑤ 아직 생각 안 해봄", score: 0 }
+                ]
+            },
+            {
+                question: "🚨 갑자기 목돈이 필요할 때를 대비한 비상자금이 있나요?",
+                answers: [
+                    { text: "① 6개월 이상 생활비를 현금으로 확보했다 (또는 전체 자산의 20% 내외)", score: 2 },
+                    { text: "② 3~6개월 생활비 정도 현금 확보했다", score: 2 },
+                    { text: "③ 1~3개월 생활비 정도 현금 확보했다", score: 1 },
+                    { text: "④ 1개월 미만이거나 주식·펀드 팔아야 한다", score: 1 },
+                    { text: "⑤ 비상자금 따로 없다", score: 0 }
+                ]
+            },
+            {
+                question: "🏥 은퇴 후 의료비로 매달 얼마가 필요하다고 생각하시나요?\n(건강보험 본인부담금 + 비급여 항목 + 건강기능식품 등)",
+                answers: [
+                    { text: "① 월 50만원 이상 필요", score: 2 },
+                    { text: "② 월 30~50만원", score: 2 },
+                    { text: "③ 월 10~30만원", score: 1 },
+                    { text: "④ 월 10만원 이하", score: 1 },
+                    { text: "⑤ 생각해본 적 없다", score: 0 }
+                ]
+            },
+            {
+                question: "👨‍👩‍👧‍👦 자녀에게 재정적 지원이 필요하면 어떻게 하시겠어요?",
+                answers: [
+                    { text: "① 이미 증여나 지원 계획을 세워뒀다", score: 2 },
+                    { text: "② 미리 정한 한도 내에서만 지원한다", score: 2 },
+                    { text: "③ 상황 보고 결정할 것 같다", score: 1 },
+                    { text: "④ 자녀가 원하면 최대한 도와줄 것이다", score: 1 },
+                    { text: "⑤ 아직 생각 안 해봤다", score: 0 }
+                ]
+            },
+            {
+                question: "💎 자녀에게 재산을 물려줄 때 상속세·증여세를 확인해보셨나요?",
+                answers: [
+                    { text: "① 전문가 상담받아 절세 계획 세웠다", score: 2 },
+                    { text: "② 대략적인 세금 규모는 알아봤다", score: 2 },
+                    { text: "③ 상속세가 나온다는 건 아는데 얼마인지는 모른다", score: 1 },
+                    { text: "④ 상속세 낼 만큼 재산이 많지 않다고 생각한다", score: 1 },
+                    { text: "⑤ 생각해본 적 없다", score: 0 }
+                ]
+            }
+        ];
+
+        let currentQuestion = 0;
+        let score = 0;
+        let userAnswers = [];
+
+        function startDiagnosis() {
+            document.querySelector('.intro-screen').classList.remove('active');
+            document.querySelector('.question-screen').classList.add('active');
+            showQuestion();
+        }
+
+        function showQuestion() {
+            if (currentQuestion < questions.length) {
+                const question = questions[currentQuestion];
+                document.getElementById('questionText').textContent = question.question;
+                document.getElementById('progressText').textContent = `${currentQuestion + 1} / ${questions.length}`;
+                const progress = ((currentQuestion + 1) / questions.length) * 100;
+                document.getElementById('progressFill').style.width = progress + '%';
+
+                // 답변 버튼 생성
+                const answerGroup = document.getElementById('answerGroup');
+                answerGroup.innerHTML = '';
+                question.answers.forEach((answer, index) => {
+                    const button = document.createElement('button');
+                    button.className = 'answer-button';
+                    button.textContent = answer.text;
+                    button.onclick = () => selectAnswer(answer.score, answer.text);
+                    answerGroup.appendChild(button);
+                });
+            }
+        }
+
+        function selectAnswer(answerScore, answerText) {
+            score += answerScore;
+            userAnswers.push(answerText);
+            currentQuestion++;
+
+            if (currentQuestion < questions.length) {
+                showQuestion();
+            } else {
+                showResult();
+            }
+        }
+
+        function showResult() {
+            document.querySelector('.question-screen').classList.remove('active');
+            document.querySelector('.result-screen').classList.add('active');
+            
+            // 각 문항 답변을 hidden 필드에 저장
+            for (let i = 0; i < userAnswers.length; i++) {
+                document.getElementById(`question${i + 1}Answer`).value = userAnswers[i];
+            }
+            
+            // 진단 점수를 폼의 hidden 필드에 저장
+            document.getElementById('formScore').value = score + '점 / 16점';
+
+            const forestResult = document.getElementById('forestResult');
+            const treeIcon = document.getElementById('treeIcon');
+            const stageName = document.getElementById('stageName');
+            const stageTagline = document.getElementById('stageTagline');
+            const stageDescription = document.getElementById('stageDescription');
+            const resultMessage = document.getElementById('resultMessage');
+
+            // 체크포인트
+            const checkpoint1 = document.getElementById('checkpoint1');
+            const checkpoint2 = document.getElementById('checkpoint2');
+            const checkpoint3 = document.getElementById('checkpoint3');
+
+            if (score >= 0 && score <= 5) {
+                // 씨앗 단계
+                forestResult.className = 'forest-result seed-stage';
+                treeIcon.textContent = '🌱';
+                stageName.textContent = '씨앗 단계';
+                stageTagline.textContent = '은퇴준비의 씨앗을 뿌릴 때입니다';
+                stageDescription.innerHTML = '지금은 씨앗 단계지만,<br>지금 심으면 충분히 풍요로운 숲을 만들 수 있습니다.';
+                
+                checkpoint1.classList.add('active');
+                
+                // 씨앗/성장 단계에서는 기본 result-message 클래스
+                resultMessage.className = 'result-message';
+                
+                resultMessage.innerHTML = `
+                    <h3>⚠️ 씨앗 단계 | 은퇴준비 시급</h3>
+                    <p>지금 상태는 은퇴 준비가 부족한 씨앗 단계입니다.<br>
+                    하지만 아직 늦은 시점은 아닙니다. ⏰</p>
+                    
+                    <p style="margin-top: 15px;">은퇴 후 필요한 생활비를 정확한 숫자보다<br>
+                    감으로 판단하고 있을 가능성이 큽니다.<br>
+                    연금, 보험, 현금자산이 각각<br>
+                    따로 흩어져 관리되고 있을 수 있습니다.</p>
+                    
+                    <p style="margin-top: 15px; font-weight: 600;">이 단계에서 가장 위험한 생각은<br>
+                    "나중에 한 번에 정리하면 되겠지"라는 판단입니다.<br>
+                    은퇴 준비는 미룰수록<br>
+                    선택할 수 있는 방법이 빠르게 줄어듭니다.</p>
+                    
+                    <p style="margin-top: 15px;">반대로 지금 정리하면 충분히 방향을 되돌릴 수 있습니다.<br>
+                    지금 필요한 것은 새로운 상품이 아니라<br>
+                    현재 자산을 한 번에 보는 정리입니다. 🔎</p>
+                    
+                    <p style="margin-top: 15px; color: #2E7D32; font-weight: 600;">
+                        🌱 지금이 뿌리를 내리기 가장 좋은 타이밍입니다.
+                    </p>
+                `;
+            } else if (score >= 6 && score <= 11) {
+                // 나무 단계
+                forestResult.className = 'forest-result grow-stage';
+                treeIcon.textContent = '🌲';
+                stageName.textContent = '나무 단계';
+                stageTagline.textContent = '은퇴준비 나무가 자라고 있습니다';
+                stageDescription.innerHTML = '기본은 잘 다져졌습니다!<br>이제 더욱 튼튼하게 가지를 뻗을 차례입니다.';
+                
+                checkpoint1.classList.add('active');
+                checkpoint2.classList.add('active');
+                
+                // 씨앗/성장 단계에서는 기본 result-message 클래스
+                resultMessage.className = 'result-message';
+                
+                resultMessage.innerHTML = `
+                    <h3>📊 나무 단계 | 은퇴준비 보완 필요</h3>
+                    <p>현재는 은퇴 준비가 자라고 있는 나무 단계입니다.<br>
+                    기본적인 준비는 이미 시작하셨습니다. 🏃‍➡️</p>
+                    
+                    <p style="margin-top: 15px;">큰 방향은 어느 정도 잡혀 있고<br>
+                    은퇴 시점과 필요한 생활비에 대한<br>
+                    기본 계획도 마련되어 있습니다.</p>
+                    
+                    <p style="margin-top: 15px;">다만 자산이 실제로 잘 자라고 있는지<br>
+                    점검해본 적은 없을 가능성이 큽니다.<br>
+                    연금 외 현금흐름 자산이 부족하거나<br>
+                    세금과 인출 순서를 고려하지 않았을 수 있습니다.</p>
+                    
+                    <p style="margin-top: 15px; font-weight: 600;">이 단계에서 가장 자주 드는 고민은<br>
+                    "지금 방향이 맞는 걸까?"입니다.<br>
+                    작은 방향 설계의 차이가<br>
+                    은퇴 이후의 안정감을 크게 좌우합니다. 👍</p>
+                    
+                    <p style="margin-top: 15px; color: #2E7D32; font-weight: 600;">
+                        지금은 더 쌓을 때가 아니라<br>
+                        🌲 가지를 다듬어 숲을 준비할 시점입니다.
+                    </p>
+                `;
+            } else if (score >= 12 && score <= 16) {
+                // 숲 단계
+                forestResult.className = 'forest-result forest-stage';
+                treeIcon.textContent = '🌳🌲🌳';
+                stageName.textContent = '숲 단계';
+                stageTagline.textContent = '풍요로운 은퇴의 숲이 완성되었습니다';
+                stageDescription.innerHTML = '훌륭합니다!<br>안정적인 노후를 위한 준비가 잘 되어있습니다.';
+                
+                checkpoint1.classList.add('active');
+                checkpoint2.classList.add('active');
+                checkpoint3.classList.add('active');
+                
+                // 모든 단계 동일하게 흰색 배경
+                resultMessage.className = 'result-message';
+                
+                resultMessage.innerHTML = `
+                    <h3>🎉 숲 단계 | 은퇴준비 양호</h3>
+                    <p>축하합니다. 현재 상태는<br>
+                    은퇴 준비가 잘 갖춰진 숲 단계에 가깝습니다. 🌳</p>
+                    
+                    <p style="margin-top: 15px;">이제 "준비가 되었는가"에 대한 질문은 끝났습니다.<br>
+                    지금부터의 질문은 하나입니다.<br>
+                    "이 자산을 어떻게 지킬 것인가❓"</p>
+                    
+                    <p style="margin-top: 15px;">고액 자산가들은 수익보다 자산을 지키는 구조를 먼저 봅니다.<br>
+                    세금으로 불필요하게 새는 부분은 없는지,<br>
+                    변동성 리스크에 노출된 자산은 없는지,<br>
+                    은퇴 이후에도 현금흐름이 안정적으로 이어지는지를 점검합니다.</p>
+                    
+                    <p style="margin-top: 15px; font-weight: 600;">잘 준비된 자산일수록 지키는 전략에 따라 격차가 벌어집니다. 🛡️<br>
+                    이 단계의 상담은 불안해서 받는 점검이 아니라<br>
+                    자산을 단단하게 지키기 위한 선제적 대응입니다.</p>
+                    
+                    <p style="margin-top: 15px; color: #2E7D32; font-weight: 600;">
+                        ⚖️ 지금이 가장 안정적으로 보호 장치를 구축할 수 있는 타이밍입니다.
+                    </p>
+                `;
+            }
+        }
+
+        function restart() {
+            currentQuestion = 0;
+            score = 0;
+            userAnswers = [];
+            document.querySelector('.result-screen').classList.remove('active');
+            document.querySelector('.intro-screen').classList.add('active');
+        }
+
+        // Google Forms 제출 처리
+        document.getElementById('consultationForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            // 개인정보 동의 체크 확인
+            if (!document.getElementById('privacyAgree').checked) {
+                alert('개인정보 수집 및 이용에 동의해주세요.');
+                return;
+            }
+
+            // 희망 서비스 체크박스 수집 (필수 아님)
+            const services = [];
+            for (let i = 1; i <= 5; i++) {
+                const checkbox = document.getElementById(`service${i}`);
+                if (checkbox && checkbox.checked) {
+                    services.push(checkbox.value);
+                }
+            }
+
+            const name = document.getElementById('userName').value;
+            const phone = document.getElementById('userPhone').value;
+            const email = document.getElementById('userEmail').value;
+            const age = document.getElementById('userAge').value;
+            const asset = document.getElementById('userAsset').value;
+            const referral = document.getElementById('userReferral').value; // 단일 선택으로 변경
+            const scoreValue = document.getElementById('formScore').value;
+
+            // Google Forms URL (실제 사용 시 변경 필요)
+            const googleFormsUrl = 'https://docs.google.com/forms/d/e/1FAIpQLSfbO5K3Bj1SeqzohuTVGMiJX9xTHDdmT9N_b7XqrExQgMZwyg/formResponse';
+            
+            // Google Forms 필드 ID (실제 사용 시 변경 필요)
+            const formData = new FormData();
+            formData.append('entry.184967131', name); // 이름
+            formData.append('entry.1004155108', phone); // 연락처
+            formData.append('entry.1887756782', email || '미입력'); // 이메일
+            formData.append('entry.975543472', age || '미입력'); // 연령대
+            formData.append('entry.744233890', asset || '미입력'); // 자산규모
+            formData.append('entry.390607758', referral || '미입력'); // 유입경로
+            formData.append('entry.1652369742', services.join(', ') || '미입력'); // 희망서비스
+            formData.append('entry.1542610737', scoreValue); // 진단점수
+            
+            // 각 문항 답변 추가
+            formData.append('entry.22898200', document.getElementById('question1Answer').value);
+            formData.append('entry.479333499', document.getElementById('question2Answer').value);
+            formData.append('entry.1565993680', document.getElementById('question3Answer').value);
+            formData.append('entry.977805904', document.getElementById('question4Answer').value);
+            formData.append('entry.643294114', document.getElementById('question5Answer').value);
+            formData.append('entry.855068831', document.getElementById('question6Answer').value);
+            formData.append('entry.555097516', document.getElementById('question7Answer').value);
+            formData.append('entry.1622696917', document.getElementById('question8Answer').value);
+
+            // Google Forms에 제출
+            fetch(googleFormsUrl, {
+                method: 'POST',
+                mode: 'no-cors',
+                body: formData
+            }).then(() => {
+                alert(`${name}님, 상담 신청이 완료되었습니다.\n곧 연락드리겠습니다.`);
+                // 폼 초기화
+                document.getElementById('userName').value = '';
+                document.getElementById('userPhone').value = '';
+                document.getElementById('userEmail').value = '';
+                document.getElementById('userAge').value = '';
+                document.getElementById('userAsset').value = '';
+                document.getElementById('userReferral').value = ''; // select로 변경
+                document.getElementById('privacyAgree').checked = false;
+                for (let i = 1; i <= 5; i++) {
+                    document.getElementById(`service${i}`).checked = false;
+                }
+            }).catch((error) => {
+                alert('상담 신청이 완료되었습니다.');
+                // 폼 초기화
+                document.getElementById('userName').value = '';
+                document.getElementById('userPhone').value = '';
+                document.getElementById('userEmail').value = '';
+                document.getElementById('userAge').value = '';
+                document.getElementById('userAsset').value = '';
+                document.getElementById('userReferral').value = ''; // select로 변경
+                document.getElementById('privacyAgree').checked = false;
+                for (let i = 1; i <= 5; i++) {
+                    document.getElementById(`service${i}`).checked = false;
+                }
+            });
+        });
+    </script>
+</body>
+</html>
