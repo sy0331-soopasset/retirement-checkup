@@ -9,6 +9,7 @@
 /build
 
 # env files (민감정보 보호)
+.env
 .env*.local
 
 # misc
