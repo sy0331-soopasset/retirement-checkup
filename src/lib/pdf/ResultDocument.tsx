@@ -1,7 +1,12 @@
-import { Document, Page, Text, View, StyleSheet } from '@react-pdf/renderer';
+import { Document, Page, Text, View, StyleSheet, Image } from '@react-pdf/renderer';
+import path from 'path';
+import fs from 'fs';
 import type { AnalysisItem, Stage } from '@/lib/types';
 import { actionPlans } from '@/data/feedback';
 import './fonts';
+
+const logoFilePath = path.join(process.cwd(), 'public', 'logo_transparent.png');
+const LOGO_SRC = `data:image/png;base64,${fs.readFileSync(logoFilePath).toString('base64')}`;
 
 interface AnalysisGroups {
   excellent: AnalysisItem[];
@@ -55,11 +60,11 @@ const styles = StyleSheet.create({
   headerRight: {
     alignItems: 'flex-end',
   },
-  brand: {
-    fontSize: 11,
-    color: COLORS.teal,
-    fontWeight: 700,
-    marginBottom: 4,
+  logo: {
+    width: 120,
+    height: 43,
+    marginBottom: 6,
+    objectFit: 'contain',
   },
   title: {
     fontSize: 20,
@@ -92,23 +97,37 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   scoreLabel: {
-    fontSize: 10,
+    fontSize: 9,
     color: COLORS.gray,
-    marginBottom: 4,
+    marginBottom: 6,
+  },
+  scoreStageRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
   },
   scoreStage: {
-    fontSize: 16,
+    fontSize: 18,
     fontWeight: 700,
     color: COLORS.tealDark,
   },
+  scoreDesc: {
+    fontSize: 18,
+    fontWeight: 700,
+  },
+  scoreRight: {
+    alignItems: 'flex-end',
+    justifyContent: 'flex-end',
+  },
   scoreValue: {
-    fontSize: 28,
+    fontSize: 18,
     fontWeight: 700,
     color: COLORS.teal,
   },
   scoreTotal: {
-    fontSize: 11,
+    fontSize: 18,
     color: COLORS.gray,
+    fontWeight: 400,
   },
   sectionTitle: {
     fontSize: 12,
@@ -239,14 +258,14 @@ const styles = StyleSheet.create({
   },
 });
 
-function getStageLabel(stage: Stage): { name: string; desc: string } {
+function getStageLabel(stage: Stage): { name: string; desc: string; color: string } {
   if (stage === 'seed') {
-    return { name: '씨앗 단계', desc: '은퇴준비 시급' };
+    return { name: '씨앗 단계', desc: '은퇴준비 시급', color: COLORS.red };
   }
   if (stage === 'tree') {
-    return { name: '나무 단계', desc: '은퇴준비 보완 필요' };
+    return { name: '나무 단계', desc: '은퇴준비 보완 필요', color: COLORS.orange };
   }
-  return { name: '숲 단계', desc: '은퇴준비 양호' };
+  return { name: '숲 단계', desc: '은퇴준비 양호', color: COLORS.green };
 }
 
 function getStageMessage(stage: Stage): string {
@@ -285,13 +304,12 @@ function CategorySection({
         : styles.categoryTitleLacking;
 
   return (
-    <View style={[styles.categoryBlock, blockStyle]}>
+    <View style={[styles.categoryBlock, blockStyle]} wrap={false}>
       <Text style={[styles.categoryTitle, titleStyle]}>{title}</Text>
       {items.map((item, idx) => (
         <View
           key={item.index}
           style={idx === items.length - 1 ? styles.analysisItemLast : styles.analysisItem}
-          wrap={false}
         >
           <Text style={styles.itemName}>{item.name}</Text>
           <Text style={styles.itemFeedback}>{item.feedback}</Text>
@@ -307,15 +325,15 @@ export function ResultDocument({ totalScore, stage, analysisGroups, generatedAt 
 
   return (
     <Document
-      title="은퇴준비 체크업 결과 리포트"
+      title="은퇴준비 체크리스트 결과 리포트"
       author="숲파트너스"
       subject="은퇴준비 진단 결과"
     >
       <Page size="A4" style={styles.page}>
         <View style={styles.header}>
           <View style={styles.headerLeft}>
-            <Text style={styles.brand}>SOOP PARTNERS</Text>
-            <Text style={styles.title}>은퇴준비 체크업 결과 리포트</Text>
+            <Image src={LOGO_SRC} style={styles.logo} />
+            <Text style={styles.title}>은퇴준비 체크리스트 결과 리포트</Text>
           </View>
           <View style={styles.headerRight}>
             <Text style={styles.metaLabel}>발급일</Text>
@@ -324,16 +342,17 @@ export function ResultDocument({ totalScore, stage, analysisGroups, generatedAt 
         </View>
 
         <View style={styles.scoreCard}>
-          <View>
+          <View style={{ flex: 1 }}>
             <Text style={styles.scoreLabel}>종합 진단 결과</Text>
-            <Text style={styles.scoreStage}>{stageInfo.name}</Text>
-            <Text style={styles.meta}>{stageInfo.desc}</Text>
+            <View style={styles.scoreStageRow}>
+              <Text style={styles.scoreStage}>{stageInfo.name}</Text>
+              <Text style={[styles.scoreDesc, { color: stageInfo.color }]}>{stageInfo.desc}</Text>
+            </View>
           </View>
-          <View style={{ alignItems: 'flex-end' }}>
+          <View style={styles.scoreRight}>
             <Text style={styles.scoreLabel}>총점</Text>
-            <Text style={styles.scoreValue}>
-              {totalScore}
-              <Text style={styles.scoreTotal}> / 16</Text>
+            <Text style={[styles.scoreValue]}>
+              {totalScore}<Text style={styles.scoreTotal}> / 16</Text>
             </Text>
           </View>
         </View>

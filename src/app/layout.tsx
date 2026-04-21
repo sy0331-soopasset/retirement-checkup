@@ -3,12 +3,12 @@ import Script from 'next/script';
 import './globals.css';
 
 export const metadata: Metadata = {
-  title: '은퇴준비 자가진단 체크리스트 | 숲파트너스',
+  title: '은퇴준비 체크리스트 | 숲파트너스',
   description:
     '8가지 질문으로 나의 은퇴준비 상태를 진단하고 맞춤형 솔루션을 제안받으세요. 연금, 생활비, 세금, 자산관리까지 종합 점검.',
   keywords: '은퇴준비, 은퇴설계, 자가진단, 연금, 노후준비, 자산관리, 상속세, 증여세, 숲파트너스',
   openGraph: {
-    title: '은퇴준비 자가진단 체크리스트 | 숲파트너스',
+    title: '은퇴준비 체크리스트 | 숲파트너스',
     description: '8가지 질문으로 나의 은퇴준비 상태를 확인해보세요.',
     type: 'website',
     locale: 'ko_KR',

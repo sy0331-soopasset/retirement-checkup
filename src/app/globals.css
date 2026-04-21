@@ -46,7 +46,7 @@ main {
 
 .logo-header img {
   width: 100%;
-  max-width: 280px;
+  max-width: 180px;
   height: auto;
 }
 
@@ -102,9 +102,22 @@ main {
 
 .intro-content h2 {
   color: #053c3c;
-  font-size: 24px;
+  font-size: 22px;
+  margin-bottom: 8px;
+  font-weight: 800;
+  letter-spacing: -0.3px;
+  display: inline-block;
+  background: linear-gradient(180deg, transparent 60%, rgba(5, 60, 60, 0.15) 60%);
+  padding: 0 4px;
+}
+
+.intro-subtitle {
+  font-size: 13px;
+  color: #888;
+  font-weight: 500;
   margin-bottom: 20px;
-  font-weight: 700;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
 }
 
 .intro-content p {
@@ -762,7 +775,17 @@ button {
 }
 
 .privacy-detail p {
+  display: flex;
+  gap: 8px;
   margin: 5px 0;
+  word-break: keep-all;
+  overflow-wrap: break-word;
+}
+
+.privacy-detail p strong {
+  flex-shrink: 0;
+  min-width: 72px;
+  color: #333;
 }
 
 .result-highlight {

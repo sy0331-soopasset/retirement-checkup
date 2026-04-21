@@ -14,17 +14,15 @@ export default function IntroScreen({ onStart }: Props) {
           <Image
             src="/logo_transparent.png"
             alt="숲파트너스 로고"
-            width={280}
-            height={100}
+            width={180}
+            height={65}
             priority
           />
         </div>
-        <h1>은퇴준비 자가진단 체크리스트</h1>
-        <p>나의 은퇴준비 상태를 확인해보세요</p>
       </div>
 
       <div className="intro-content">
-        <h2>{'\u{1F333}'} 은퇴준비 자가진단</h2>
+        <h2>{'\u{1F333}'} 은퇴준비 체크리스트</h2>
         <p>
           8가지 질문으로 현재 나의 은퇴준비 상태를 확인하고,
           <br />

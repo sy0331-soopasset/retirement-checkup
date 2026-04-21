@@ -15,7 +15,7 @@ interface Props {
   onSubmitSuccess: (userName: string) => void;
 }
 
-const SERVICE_OPTIONS = ['은퇴준비', '세무서비스', '법무서비스', '자산관리', '종합상담'];
+const SERVICE_OPTIONS = ['은퇴준비', '자산관리', '법인설립', '종합상담'];
 
 export default function FormScreen({
   totalScore,
@@ -136,12 +136,12 @@ export default function FormScreen({
         <p className="form-gate-desc">
           맞춤 분석 결과와 영역별 상세 리포트가 준비되었습니다.
           <br />
-          아래 정보를 입력하시면 <strong>진단 결과를 바로 확인</strong>하실 수 있으며,
+          아래 정보를 입력하시면 <strong>진단 결과를 확인 및 다운받으</strong>실 수 있으며,
           <br />
           전문가의 1:1 무료 상담도 함께 제공됩니다.
         </p>
         <p className="form-gate-note">
-          {'\u{1F512}'} 입력하신 정보는 상담 목적으로만 사용되며, 상담 후 별도의 상품 가입을 권유하지 않습니다.
+          {'\u{1F512}'} 입력하신 정보는 상담 목적으로만 사용되며,<br />상담 후 별도의 상품 가입을 권유하지 않습니다.
         </p>
       </div>
 
