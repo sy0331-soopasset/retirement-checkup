@@ -2,6 +2,11 @@ import type { Metadata } from 'next';
 import Script from 'next/script';
 import './globals.css';
 
+export const viewport = {
+  width: 'device-width',
+  initialScale: 1,
+};
+
 export const metadata: Metadata = {
   title: '은퇴준비 체크리스트 | 숲파트너스',
   description:
