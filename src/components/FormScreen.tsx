@@ -12,7 +12,7 @@ interface Props {
   userAnswers: string[];
   itemScores: number[];
   utmParams: Record<string, string>;
-  onSubmitSuccess: () => void;
+  onSubmitSuccess: (userName: string) => void;
 }
 
 const SERVICE_OPTIONS = ['은퇴준비', '세무서비스', '법무서비스', '자산관리', '종합상담'];
@@ -107,7 +107,7 @@ export default function FormScreen({
 
       if (data.result === 'success') {
         trackConversion();
-        onSubmitSuccess();
+        onSubmitSuccess(name);
       } else {
         setError(data.error || '오류가 발생했습니다. 잠시 후 다시 시도해주세요.');
       }

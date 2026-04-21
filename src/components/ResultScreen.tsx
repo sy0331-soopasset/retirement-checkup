@@ -1,5 +1,6 @@
 'use client';
 
+import { useState } from 'react';
 import Image from 'next/image';
 import type { Stage, AnalysisItem } from '@/lib/types';
 import ForestResult from './ForestResult';
@@ -15,6 +16,7 @@ interface Props {
   totalScore: number;
   stage: Stage;
   analysisGroups: AnalysisGroups;
+  userName: string;
   onRestart: () => void;
 }
 
@@ -145,8 +147,50 @@ export default function ResultScreen({
   totalScore,
   stage,
   analysisGroups,
+  userName,
   onRestart,
 }: Props) {
+  const [isGeneratingPdf, setIsGeneratingPdf] = useState(false);
+
+  const handleDownloadPdf = async () => {
+    if (isGeneratingPdf) return;
+    setIsGeneratingPdf(true);
+    try {
+      const res = await fetch('/api/pdf', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ totalScore, stage, analysisGroups, userName }),
+      });
+
+      if (!res.ok) {
+        throw new Error('PDF 생성에 실패했습니다.');
+      }
+
+      const blob = await res.blob();
+      const url = URL.createObjectURL(blob);
+
+      const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
+      if (isIOS) {
+        window.open(url, '_blank');
+      } else {
+        const safeName = (userName || '신청자').trim().replace(/[\\/:*?"<>|]/g, '');
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `${safeName}님의 은퇴준비체크업 결과.pdf`;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+      }
+
+      setTimeout(() => URL.revokeObjectURL(url), 10000);
+    } catch (err) {
+      console.error(err);
+      alert('PDF 다운로드 중 오류가 발생했습니다. 잠시 후 다시 시도해주세요.');
+    } finally {
+      setIsGeneratingPdf(false);
+    }
+  };
+
   return (
     <div className="screen">
       <div className="result-logo">
@@ -175,6 +219,16 @@ export default function ResultScreen({
         onClick={onRestart}
       >
         다시 진단하기
+      </button>
+
+      <button
+        type="button"
+        className="btn-download-pdf"
+        onClick={handleDownloadPdf}
+        disabled={isGeneratingPdf}
+        aria-busy={isGeneratingPdf}
+      >
+        {isGeneratingPdf ? 'PDF 생성 중...' : '\u{1F4C4} 결과 PDF 다운로드'}
       </button>
 
       <footer className="footer">

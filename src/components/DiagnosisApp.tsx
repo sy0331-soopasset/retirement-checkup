@@ -20,6 +20,7 @@ export default function DiagnosisApp() {
   const [userAnswers, setUserAnswers] = useState<string[]>([]);
   const [itemScores, setItemScores] = useState<number[]>([]);
   const [utmParams, setUtmParams] = useState<Record<string, string>>({});
+  const [userName, setUserName] = useState('');
 
   useEffect(() => {
     setUtmParams(captureUtmParams());
@@ -43,7 +44,8 @@ export default function DiagnosisApp() {
     }
   }, [currentQuestion, totalScore]);
 
-  const showLoading = useCallback(() => {
+  const showLoading = useCallback((name: string) => {
+    setUserName(name);
     setScreen('loading');
   }, []);
 
@@ -57,6 +59,7 @@ export default function DiagnosisApp() {
     setTotalScore(0);
     setUserAnswers([]);
     setItemScores([]);
+    setUserName('');
   }, []);
 
   const getStage = (): Stage => {
@@ -119,6 +122,7 @@ export default function DiagnosisApp() {
           totalScore={totalScore}
           stage={getStage()}
           analysisGroups={getAnalysisGroups()}
+          userName={userName}
           onRestart={restart}
         />
       )}
