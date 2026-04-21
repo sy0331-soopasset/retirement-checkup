@@ -21,7 +21,7 @@ export const metadata: Metadata = {
     url: 'https://www.soop-partners.com',
     images: [
       {
-        url: '/opengraph-image',
+        url: 'https://retirement-checkup.vercel.app/og-image.jpg',
         width: 1200,
         height: 630,
         alt: '은퇴준비 체크리스트 | 숲파트너스',
