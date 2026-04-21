@@ -19,6 +19,14 @@ export const metadata: Metadata = {
     locale: 'ko_KR',
     siteName: '숲파트너스',
     url: 'https://www.soop-partners.com',
+    images: [
+      {
+        url: '/opengraph-image',
+        width: 1200,
+        height: 630,
+        alt: '은퇴준비 체크리스트 | 숲파트너스',
+      },
+    ],
   },
   robots: { index: true, follow: true },
   alternates: {
