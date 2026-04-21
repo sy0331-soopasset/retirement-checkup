@@ -168,19 +168,21 @@ export default function ResultScreen({
 
       const blob = await res.blob();
       const url = URL.createObjectURL(blob);
+      const safeName = (userName || '신청자').trim().replace(/[\\/:*?"<>|]/g, '');
+
+      const a = document.createElement('a');
+      a.href = url;
+      a.target = '_blank';
+      a.rel = 'noopener noreferrer';
 
       const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
-      if (isIOS) {
-        window.open(url, '_blank');
-      } else {
-        const safeName = (userName || '신청자').trim().replace(/[\\/:*?"<>|]/g, '');
-        const a = document.createElement('a');
-        a.href = url;
+      if (!isIOS) {
         a.download = `${safeName}님의 은퇴준비체크업 결과.pdf`;
-        document.body.appendChild(a);
-        a.click();
-        document.body.removeChild(a);
       }
+
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
 
       setTimeout(() => URL.revokeObjectURL(url), 10000);
     } catch (err) {
