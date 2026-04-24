@@ -89,7 +89,7 @@ export default function DiagnosisApp() {
   };
 
   return (
-    <div className="container">
+    <div className={screen === 'intro' ? 'intro-page' : 'container'}>
       {screen === 'intro' && (
         <IntroScreen onStart={startDiagnosis} />
       )}

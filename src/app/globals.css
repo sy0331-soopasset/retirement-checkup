@@ -30,6 +30,160 @@ main {
   overflow: hidden;
 }
 
+/* 인트로 풀스크린 */
+.intro-page {
+  width: 100%;
+  max-width: 600px;
+  padding: 40px 24px 32px;
+}
+
+.ip-logo {
+  text-align: center;
+  margin-bottom: 32px;
+}
+
+.ip-hero {
+  text-align: center;
+  margin-bottom: 24px;
+}
+
+.ip-h1 {
+  font-size: 32px;
+  font-weight: 900;
+  color: #ffffff;
+  line-height: 1.3;
+  margin-bottom: 16px;
+  letter-spacing: -1px;
+}
+
+.ip-sub {
+  font-size: 15px;
+  color: rgba(255, 255, 255, 0.75);
+  line-height: 1.7;
+}
+
+.ip-sub strong {
+  color: #a8d8d8;
+}
+
+.ip-badges {
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+  margin-bottom: 28px;
+  flex-wrap: wrap;
+}
+
+.ip-badge {
+  color: rgba(255, 255, 255, 0.85);
+  font-size: 13px;
+  font-weight: 600;
+  padding: 6px 14px;
+  border-radius: 20px;
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.ip-btn-main {
+  width: 100%;
+  padding: 16px;
+  font-size: 17px;
+  font-weight: 800;
+  background: #c8e6c9;
+  color: #053c3c;
+  border: none;
+  border-radius: 50px;
+  cursor: pointer;
+  margin-bottom: 28px;
+  transition: all 0.3s ease;
+  font-family: 'Pretendard', inherit;
+  letter-spacing: -0.3px;
+}
+
+.ip-btn-main:hover {
+  background: #a5d6a7;
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.2);
+}
+
+.ip-card {
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  border-radius: 14px;
+  padding: 20px;
+  margin-bottom: 16px;
+}
+
+.ip-card-title {
+  font-size: 15px;
+  font-weight: 700;
+  color: #ffffff;
+  margin-bottom: 14px;
+}
+
+.ip-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.ip-list li {
+  font-size: 14px;
+  color: rgba(255, 255, 255, 0.8);
+  padding-left: 18px;
+  position: relative;
+  line-height: 1.5;
+}
+
+.ip-list li::before {
+  content: '✓';
+  position: absolute;
+  left: 0;
+  color: #a8d8d8;
+  font-weight: 700;
+}
+
+.ip-areas {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 8px;
+}
+
+.ip-area-tag {
+  background: rgba(255, 255, 255, 0.1);
+  color: rgba(255, 255, 255, 0.85);
+  font-size: 12px;
+  font-weight: 600;
+  padding: 7px 6px;
+  border-radius: 20px;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  text-align: center;
+}
+
+.ip-footer {
+  text-align: center;
+  padding-top: 16px;
+  border-top: 1px solid rgba(255, 255, 255, 0.15);
+}
+
+.ip-footer p {
+  color: rgba(255, 255, 255, 0.4);
+  font-size: 12px;
+  margin: 4px 0;
+}
+
+.ip-footer a {
+  color: rgba(255, 255, 255, 0.5);
+  text-decoration: none;
+}
+
+.ip-footer a:hover {
+  color: rgba(255, 255, 255, 0.8);
+}
+
 /* Logo */
 .logo {
   text-align: center;
