@@ -29,7 +29,7 @@ export default function QuestionScreen({ question, currentIndex, totalCount, onA
       </div>
 
       <div className="progress-text">
-        <button className="btn-back" onClick={onBack}>← 이전</button>
+        {currentIndex > 0 && <button className="btn-back" onClick={onBack}>← 이전</button>}
         {currentIndex + 1} / {totalCount}
       </div>
       <div className="progress-bar">
