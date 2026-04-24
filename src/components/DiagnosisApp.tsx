@@ -44,6 +44,17 @@ export default function DiagnosisApp() {
     }
   }, [currentQuestion, totalScore]);
 
+  const goBack = useCallback(() => {
+    if (currentQuestion === 0) {
+      setScreen('intro');
+    } else {
+      setCurrentQuestion((prev) => prev - 1);
+      setTotalScore((prev) => prev - itemScores[itemScores.length - 1]);
+      setUserAnswers((prev) => prev.slice(0, -1));
+      setItemScores((prev) => prev.slice(0, -1));
+    }
+  }, [currentQuestion, itemScores]);
+
   const showLoading = useCallback((name: string) => {
     setUserName(name);
     setScreen('loading');
@@ -100,6 +111,7 @@ export default function DiagnosisApp() {
           currentIndex={currentQuestion}
           totalCount={questions.length}
           onAnswer={selectAnswer}
+          onBack={goBack}
         />
       )}
 

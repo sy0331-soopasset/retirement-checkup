@@ -327,11 +327,35 @@ main {
 }
 
 .progress-text {
-  text-align: center;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
   color: #666;
   font-size: 14px;
   margin-bottom: 20px;
   font-weight: 600;
+}
+
+.btn-back {
+  position: absolute;
+  left: 0;
+  background: none;
+  border: none;
+  color: #888;
+  font-size: 13px;
+  font-weight: 600;
+  padding: 4px 8px;
+  cursor: pointer;
+  font-family: 'Pretendard', inherit;
+  border-radius: 6px;
+  transition: color 0.2s ease, background 0.2s ease;
+}
+
+.btn-back:hover {
+  color: #053c3c;
+  background: rgba(5, 60, 60, 0.06);
+  transform: none;
 }
 
 /* Screens */
