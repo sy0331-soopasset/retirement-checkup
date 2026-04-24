@@ -21,15 +21,35 @@ export default function IntroScreen({ onStart }: Props) {
         />
       </div>
 
+      {/* 스타 데코 */}
+      <div className="ip-stars">✦ &nbsp; ✦ &nbsp; ✦ &nbsp; ✦ &nbsp; ✦</div>
+
       {/* 헤드라인 */}
       <div className="ip-hero">
+        <p className="ip-eyebrow">5060을 위한 맞춤 자가진단</p>
         <h1 className="ip-h1">
           나의 은퇴준비<br />지금 몇 점일까요?
         </h1>
-        <p className="ip-sub">
-          8가지 핵심 질문으로 확인하는<br />
-          <strong>무료 은퇴준비 체크리스트</strong>
-        </p>
+      </div>
+
+      {/* 메인 비주얼 */}
+      <div className="ip-visual">
+        <div className="ip-spotlight" />
+        <div className="ip-stage-wrap">
+          <div className="ip-stage">
+            <span className="ip-tree ip-tree--s">🌱</span>
+            <span className="ip-stage-label">씨앗</span>
+          </div>
+          <div className="ip-stage ip-stage--center">
+            <span className="ip-tree ip-tree--m">🌳</span>
+            <span className="ip-stage-label">나무</span>
+          </div>
+          <div className="ip-stage">
+            <span className="ip-tree ip-tree--l">🌲</span>
+            <span className="ip-stage-label">숲</span>
+          </div>
+        </div>
+        <p className="ip-visual-caption">당신의 은퇴준비는 어느 단계인가요?</p>
       </div>
 
       {/* 배지 */}
