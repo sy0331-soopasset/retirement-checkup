@@ -1,12 +1,24 @@
 'use client';
 
 import Image from 'next/image';
+import { useState, useEffect } from 'react';
 
 interface Props {
   onStart: () => void;
 }
 
+const STAGE_DURATION = 1800;
+
 export default function IntroScreen({ onStart }: Props) {
+  const [activeStage, setActiveStage] = useState(0);
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setActiveStage((prev) => (prev + 1) % 3);
+    }, STAGE_DURATION);
+    return () => clearInterval(interval);
+  }, []);
+
   return (
     <div className="screen">
       {/* 로고 */}
@@ -36,18 +48,20 @@ export default function IntroScreen({ onStart }: Props) {
       <div className="ip-visual">
         <div className="ip-spotlight" />
         <div className="ip-stage-wrap">
-          <div className="ip-stage">
-            <span className="ip-tree ip-tree--s">🌱</span>
-            <span className="ip-stage-label">씨앗</span>
-          </div>
-          <div className="ip-stage ip-stage--center">
-            <span className="ip-tree ip-tree--m">🌳</span>
-            <span className="ip-stage-label">나무</span>
-          </div>
-          <div className="ip-stage">
-            <span className="ip-tree ip-tree--l">🌲</span>
-            <span className="ip-stage-label">숲</span>
-          </div>
+          {[
+            { emoji: '🌱', label: '씨앗', cls: 'ip-tree--s' },
+            { emoji: '🌳', label: '나무', cls: 'ip-tree--m' },
+            { emoji: '🌲', label: '숲',   cls: 'ip-tree--l' },
+          ].map((item, idx) => (
+            <div key={idx} className="ip-stage">
+              <span className={`ip-tree ${item.cls}${activeStage === idx ? ' ip-tree--active' : ''}`}>
+                {item.emoji}
+              </span>
+              <span className={`ip-stage-label${activeStage === idx ? ' ip-stage-label--active' : ''}`}>
+                {item.label}
+              </span>
+            </div>
+          ))}
         </div>
         <p className="ip-visual-caption">당신의 은퇴준비는 어느 단계인가요?</p>
       </div>
