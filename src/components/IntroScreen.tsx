@@ -13,9 +13,10 @@ export default function IntroScreen({ onStart }: Props) {
         <Image
           src="/logo_transparent.png"
           alt="숲파트너스 로고"
-          width={160}
-          height={58}
+          width={200}
+          height={57}
           priority
+          style={{ height: 'auto' }}
         />
       </div>
 
@@ -62,9 +63,14 @@ export default function IntroScreen({ onStart }: Props) {
         지금 바로 시작하기
       </button>
 
-      <p className="intro-footer-note">
-        숲파트너스 | 5060의 선택, 마음 편한 투자
-      </p>
+      <footer className="footer">
+        <p>© 2026 주식회사 숲파트너스. All rights reserved.</p>
+        <p>
+          <a href="https://www.soop-partners.com" target="_blank" rel="noopener noreferrer">
+            www.soop-partners.com
+          </a>
+        </p>
+      </footer>
     </div>
   );
 }
