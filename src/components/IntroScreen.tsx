@@ -91,7 +91,7 @@ export default function IntroScreen({ onStart }: Props) {
 
       {/* 진단 영역 */}
       <div className="ip-card">
-        <h2 className="ip-card-title">🌳 8가지 영역을 진단합니다</h2>
+        <h2 className="ip-card-title">🔍 8가지 영역을 진단합니다</h2>
         <div className="ip-areas">
           {['연금 준비', '생활비 계획', '현금흐름 자산', '주거 전략',
             '의료비 준비', '세금 계획', '자녀 지원', '자산 관리'].map((area) => (
