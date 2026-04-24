@@ -243,29 +243,7 @@ main {
 
 .ip-footer {
   text-align: center;
-  padding-top: 16px;
-  border-top: 1px solid rgba(255, 255, 255, 0.15);
-}
-
-.ip-footer p {
-  color: rgba(255, 255, 255, 0.4);
-  font-size: 12px;
-  margin: 4px 0;
-}
-
-.ip-footer a {
-  color: rgba(255, 255, 255, 0.5);
-  text-decoration: none;
-}
-
-.ip-footer a:hover {
-  color: rgba(255, 255, 255, 0.8);
-}
-
-.ip-footer-biz {
-  margin-top: 12px;
-  padding-top: 12px;
-  border-top: 1px solid rgba(255, 255, 255, 0.08);
+  padding-top: 8px;
 }
 
 .ip-footer-biz p {
@@ -273,6 +251,27 @@ main {
   font-size: 11px;
   margin: 3px 0;
   line-height: 1.6;
+}
+
+.ip-footer-copy {
+  margin-top: 12px;
+  padding-top: 12px;
+  border-top: 1px solid rgba(255, 255, 255, 0.15);
+}
+
+.ip-footer-copy p {
+  color: rgba(255, 255, 255, 0.4);
+  font-size: 12px;
+  margin: 4px 0;
+}
+
+.ip-footer-copy a {
+  color: rgba(255, 255, 255, 0.5);
+  text-decoration: none;
+}
+
+.ip-footer-copy a:hover {
+  color: rgba(255, 255, 255, 0.8);
 }
 
 /* Logo */
