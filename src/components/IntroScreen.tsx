@@ -40,7 +40,7 @@ export default function IntroScreen({ onStart }: Props) {
       <div className="ip-hero">
         <p className="ip-eyebrow">5060을 위한 맞춤 자가진단</p>
         <h1 className="ip-h1">
-          나의 은퇴준비<br />지금 몇 점일까요?
+          은퇴준비, 나는 지금<br />어느 단계일까요?
         </h1>
       </div>
 
@@ -63,7 +63,6 @@ export default function IntroScreen({ onStart }: Props) {
             </div>
           ))}
         </div>
-        <p className="ip-visual-caption">당신의 은퇴준비는 어느 단계인가요?</p>
       </div>
 
       {/* 배지 */}
@@ -91,7 +90,7 @@ export default function IntroScreen({ onStart }: Props) {
 
       {/* 진단 영역 */}
       <div className="ip-card">
-        <h2 className="ip-card-title">🔍 8가지 영역을 진단합니다</h2>
+        <h2 className="ip-card-title">📊 8가지 영역을 진단합니다</h2>
         <div className="ip-areas">
           {['연금 준비', '생활비 계획', '현금흐름 자산', '주거 전략',
             '의료비 준비', '세금 계획', '자녀 지원', '자산 관리'].map((area) => (
