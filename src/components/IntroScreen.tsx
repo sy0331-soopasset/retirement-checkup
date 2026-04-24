@@ -113,6 +113,11 @@ export default function IntroScreen({ onStart }: Props) {
             www.soop-partners.com
           </a>
         </p>
+        <div className="ip-footer-biz">
+          <p>주식회사 숲파트너스 | 대표이사: 조경석</p>
+          <p>사업자등록번호: 332-87-03604</p>
+          <p>서울시 서초구 서초대로 60길 18 6층 (교대 정인빌딩)</p>
+        </div>
       </div>
     </div>
   );

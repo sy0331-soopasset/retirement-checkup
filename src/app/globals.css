@@ -262,6 +262,19 @@ main {
   color: rgba(255, 255, 255, 0.8);
 }
 
+.ip-footer-biz {
+  margin-top: 12px;
+  padding-top: 12px;
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.ip-footer-biz p {
+  color: rgba(255, 255, 255, 0.3);
+  font-size: 11px;
+  margin: 3px 0;
+  line-height: 1.6;
+}
+
 /* Logo */
 .logo {
   text-align: center;
