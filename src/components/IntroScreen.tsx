@@ -26,7 +26,7 @@ export default function IntroScreen({ onStart }: Props) {
         </h1>
         <p className="intro-desc">
           8가지 핵심 질문으로 확인하는<br />
-          <strong>무료 은퇴준비 자가진단</strong>
+          <strong>무료 은퇴준비 체크리스트</strong>
         </p>
         <button className="btn-primary" onClick={onStart}>
           무료로 진단하기
