@@ -52,6 +52,20 @@ export default function RootLayout({
           rel="stylesheet"
           href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/static/pretendard.css"
         />
+      </head>
+      <body>
+        {/* GTM noscript fallback */}
+        {gtmId && (
+          <noscript>
+            <iframe
+              src={`https://www.googletagmanager.com/ns.html?id=${gtmId}`}
+              height="0"
+              width="0"
+              style={{ display: 'none', visibility: 'hidden' }}
+            />
+          </noscript>
+        )}
+        {children}
 
         {/* Google Tag Manager */}
         {gtmId && (
@@ -64,20 +78,16 @@ export default function RootLayout({
           </Script>
         )}
 
-        {/* Google Analytics (GTM 미사용 시 직접 로드) */}
+        {/* Google Analytics */}
         {gaId && !gtmId && (
           <>
             <Script
               src={`https://www.googletagmanager.com/gtag/js?id=${gaId}`}
               strategy="afterInteractive"
             />
-            <Script
-              id="ga"
-              strategy="afterInteractive"
-              dangerouslySetInnerHTML={{
-                __html: `window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','${gaId}');`,
-              }}
-            />
+            <Script id="ga" strategy="afterInteractive">
+              {`window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','${gaId}');`}
+            </Script>
           </>
         )}
 
@@ -112,20 +122,6 @@ export default function RootLayout({
             kakaoPixel('${kakaoPixelId}').pageView();`}
           </Script>
         )}
-      </head>
-      <body>
-        {/* GTM noscript fallback */}
-        {gtmId && (
-          <noscript>
-            <iframe
-              src={`https://www.googletagmanager.com/ns.html?id=${gtmId}`}
-              height="0"
-              width="0"
-              style={{ display: 'none', visibility: 'hidden' }}
-            />
-          </noscript>
-        )}
-        {children}
       </body>
     </html>
   );
