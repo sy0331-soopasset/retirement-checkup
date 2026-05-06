@@ -1,4 +1,5 @@
 import type { Metadata } from 'next';
+import Script from 'next/script';
 import './globals.css';
 
 export const viewport = {
@@ -47,17 +48,16 @@ export default function RootLayout({
           rel="stylesheet"
           href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/static/pretendard.css"
         />
-        {/* Google Analytics */}
-        {/* eslint-disable-next-line @next/next/no-sync-scripts */}
-        <script async src={`https://www.googletagmanager.com/gtag/js?id=${GA_ID}`} />
-        <script
-          dangerouslySetInnerHTML={{
-            __html: `window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','${GA_ID}');`,
-          }}
-        />
       </head>
       <body>
         {children}
+        <Script
+          strategy="afterInteractive"
+          src={`https://www.googletagmanager.com/gtag/js?id=${GA_ID}`}
+        />
+        <Script id="gtag-init" strategy="afterInteractive">
+          {`window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','${GA_ID}');`}
+        </Script>
       </body>
     </html>
   );
