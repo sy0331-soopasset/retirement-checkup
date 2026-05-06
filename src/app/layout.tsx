@@ -1,5 +1,4 @@
 import type { Metadata } from 'next';
-import { GoogleAnalytics } from '@/components/GoogleAnalytics';
 import './globals.css';
 
 export const viewport = {
@@ -34,17 +33,13 @@ export const metadata: Metadata = {
   },
 };
 
+const GA_ID = process.env.NEXT_PUBLIC_GA_ID || 'G-WWG0EBGY4D';
+
 export default function RootLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
-  const gaId = process.env.NEXT_PUBLIC_GA_ID || 'G-WWG0EBGY4D';
-  const gtmId = process.env.NEXT_PUBLIC_GTM_ID;
-  const metaPixelId = process.env.NEXT_PUBLIC_META_PIXEL_ID;
-  const naverAdsId = process.env.NEXT_PUBLIC_NAVER_ADS_ID;
-  const kakaoPixelId = process.env.NEXT_PUBLIC_KAKAO_PIXEL_ID;
-
   return (
     <html lang="ko">
       <head>
@@ -52,22 +47,17 @@ export default function RootLayout({
           rel="stylesheet"
           href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/static/pretendard.css"
         />
+        {/* Google Analytics */}
+        {/* eslint-disable-next-line @next/next/no-sync-scripts */}
+        <script async src={`https://www.googletagmanager.com/gtag/js?id=${GA_ID}`} />
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','${GA_ID}');`,
+          }}
+        />
       </head>
       <body>
-        {/* GTM noscript fallback */}
-        {gtmId && (
-          <noscript>
-            <iframe
-              src={`https://www.googletagmanager.com/ns.html?id=${gtmId}`}
-              height="0"
-              width="0"
-              style={{ display: 'none', visibility: 'hidden' }}
-            />
-          </noscript>
-        )}
         {children}
-
-        {gaId && <GoogleAnalytics gaId={gaId} />}
       </body>
     </html>
   );
