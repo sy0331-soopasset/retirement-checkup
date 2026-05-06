@@ -1,5 +1,4 @@
 import type { Metadata } from 'next';
-import Script from 'next/script';
 import './globals.css';
 
 export const viewport = {
@@ -34,8 +33,6 @@ export const metadata: Metadata = {
   },
 };
 
-const GA_ID = process.env.NEXT_PUBLIC_GA_ID || 'G-WWG0EBGY4D';
-
 export default function RootLayout({
   children,
 }: {
@@ -48,16 +45,17 @@ export default function RootLayout({
           rel="stylesheet"
           href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/static/pretendard.css"
         />
+        {/* Google tag (gtag.js) - external script */}
+        <script async src="https://www.googletagmanager.com/gtag/js?id=G-WWG0EBGY4D" />
       </head>
       <body>
-        {children}
-        <Script
-          strategy="afterInteractive"
-          src={`https://www.googletagmanager.com/gtag/js?id=${GA_ID}`}
+        {/* Google tag init - inline */}
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','G-WWG0EBGY4D');`,
+          }}
         />
-        <Script id="gtag-init" strategy="afterInteractive">
-          {`window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','${GA_ID}');`}
-        </Script>
+        {children}
       </body>
     </html>
   );
