@@ -25,6 +25,7 @@ export default function FormScreen({
   onSubmitSuccess,
 }: Props) {
   const [privacyAgreed, setPrivacyAgreed] = useState(false);
+  const [marketingAgreed, setMarketingAgreed] = useState(false);
   const [name, setName] = useState('');
   const [phone, setPhone] = useState('');
   const [email, setEmail] = useState('');
@@ -80,6 +81,7 @@ export default function FormScreen({
       asset,
       referral,
       score: `${totalScore}점 / 16점`,
+      marketingAgreed,
       services: services.join(', '),
       answers,
       analysis: {
@@ -134,14 +136,11 @@ export default function FormScreen({
         <div className="form-gate-icon">{'\u{2705}'}</div>
         <h2 className="form-gate-title">진단이 완료되었습니다!</h2>
         <p className="form-gate-desc">
-          맞춤 분석 결과와 영역별 상세 리포트가 준비되었습니다.
+          맞춤 리포트 + 무료 상담, 준비됐어요!
           <br />
-          아래 정보를 입력하시면 <strong>진단 결과를 확인 및 다운받으</strong>실 수 있으며,
+          이름과 연락처를 입력하면
           <br />
-          전문가의 1:1 무료 상담도 함께 제공됩니다.
-        </p>
-        <p className="form-gate-note">
-          {'\u{1F512}'} 입력하신 정보는 상담 목적으로만 사용되며,<br />상담 후 별도의 상품 가입을 권유하지 않습니다.
+          바로 PDF 다운이 가능합니다.
         </p>
       </div>
 
@@ -152,11 +151,9 @@ export default function FormScreen({
           <div className="privacy-notice">
             <h4>개인정보 수집 및 마케팅 이용 안내</h4>
             <div className="privacy-detail">
-              <p><strong>수집 항목:</strong> 이름, 연락처, 이메일, 연령대, 자산규모, 진단점수, 유입경로, 희망서비스</p>
+              <p><strong>수집 항목:</strong> 이름, 연락처</p>
               <p><strong>수집 목적:</strong> 은퇴설계 상담 서비스 제공</p>
               <p><strong>보유 기간:</strong> 상담 완료 후 1년</p>
-              <p><strong>마케팅 활용:</strong> 수집된 정보는 은퇴설계 관련 정보 및 맞춤 서비스 안내에 활용될 수 있습니다.</p>
-              <p><strong>거부 권리:</strong> 동의를 거부할 권리가 있으며, 거부 시 상담 서비스 이용이 제한됩니다.</p>
             </div>
             <label className="privacy-label">
               <input
@@ -164,7 +161,15 @@ export default function FormScreen({
                 checked={privacyAgreed}
                 onChange={(e) => setPrivacyAgreed(e.target.checked)}
               />
-              <span>[필수] 위 내용을 확인하였으며 동의합니다.</span>
+              <span>[필수] 개인정보 수집·이용 동의 (상담 서비스 제공 목적)</span>
+            </label>
+            <label className="privacy-label">
+              <input
+                type="checkbox"
+                checked={marketingAgreed}
+                onChange={(e) => setMarketingAgreed(e.target.checked)}
+              />
+              <span>[선택] 마케팅 정보 수신 및 광고성 정보 전송 동의 (전화·문자·이메일)</span>
             </label>
           </div>
 
