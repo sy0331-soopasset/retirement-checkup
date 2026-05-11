@@ -6,9 +6,12 @@ import { questions } from '@/data/questions';
 import { feedbackMessages } from '@/data/feedback';
 import { validateConsultationForm } from '@/lib/validation';
 import { trackConversion } from '@/lib/analytics';
+import type { Stage } from '@/lib/types';
+import ForestResult from './ForestResult';
 
 interface Props {
   totalScore: number;
+  stage: Stage;
   userAnswers: string[];
   itemScores: number[];
   utmParams: Record<string, string>;
@@ -17,6 +20,7 @@ interface Props {
 
 export default function FormScreen({
   totalScore,
+  stage,
   userAnswers,
   itemScores,
   utmParams,
@@ -123,14 +127,9 @@ export default function FormScreen({
       <div className="form-gate">
         <div className="form-gate-icon">{'\u{2705}'}</div>
         <h2 className="form-gate-title">진단이 완료되었습니다!</h2>
-        <p className="form-gate-desc">
-          맞춤 리포트 + 무료 상담, 준비됐어요!
-          <br />
-          이름과 연락처를 입력하면
-          <br />
-          바로 PDF 다운이 가능합니다.
-        </p>
       </div>
+
+      <ForestResult totalScore={totalScore} stage={stage} />
 
       <div className="consultation-form">
         <h3 className="form-title">{'\u{1F4CB}'} 정보 입력 후 결과 확인하기</h3>

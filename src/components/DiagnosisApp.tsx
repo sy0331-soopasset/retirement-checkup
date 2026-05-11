@@ -118,6 +118,7 @@ export default function DiagnosisApp() {
       {screen === 'form' && (
         <FormScreen
           totalScore={totalScore}
+          stage={getStage()}
           userAnswers={userAnswers}
           itemScores={itemScores}
           utmParams={utmParams}
