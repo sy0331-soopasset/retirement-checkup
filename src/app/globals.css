@@ -1111,6 +1111,73 @@ button {
   line-height: 1.6;
 }
 
+/* Result Thumbnail (블러 미리보기 카드) */
+.result-thumbnail {
+  border-radius: 12px;
+  border: 1px solid #d0e8d0;
+  overflow: hidden;
+  margin-bottom: 20px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
+}
+
+.thumbnail-badge {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 14px 18px;
+  background: linear-gradient(135deg, #e8f5e9, #c8e6c9);
+}
+
+.thumbnail-icon {
+  font-size: 24px;
+}
+
+.thumbnail-stage-name {
+  font-size: 15px;
+  color: #2e7d32;
+}
+
+.thumbnail-blur-wrap {
+  position: relative;
+  padding: 16px 18px;
+  background: white;
+}
+
+.thumbnail-blur-text {
+  filter: blur(4px);
+  user-select: none;
+  pointer-events: none;
+  white-space: pre-line;
+  line-height: 1.7;
+  font-size: 13px;
+  color: #444;
+  margin: 0;
+}
+
+.thumbnail-overlay {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background: rgba(255, 255, 255, 0.55);
+  text-align: center;
+  gap: 8px;
+  backdrop-filter: blur(1px);
+}
+
+.thumbnail-lock {
+  font-size: 28px;
+}
+
+.thumbnail-overlay-text {
+  font-size: 14px;
+  color: #333;
+  line-height: 1.6;
+  margin: 0;
+}
+
 .form-error {
   color: #C62828;
   font-size: 13px;
