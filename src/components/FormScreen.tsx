@@ -29,6 +29,13 @@ export default function FormScreen({
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState('');
 
+  const formatPhone = (value: string) => {
+    const digits = value.replace(/\D/g, '').slice(0, 11);
+    if (digits.length <= 3) return digits;
+    if (digits.length <= 7) return `${digits.slice(0, 3)}-${digits.slice(3)}`;
+    return `${digits.slice(0, 3)}-${digits.slice(3, 7)}-${digits.slice(7)}`;
+  };
+
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
     setError('');
@@ -171,7 +178,7 @@ export default function FormScreen({
               type="tel"
               placeholder="010-0000-0000"
               value={phone}
-              onChange={(e) => setPhone(e.target.value)}
+              onChange={(e) => setPhone(formatPhone(e.target.value))}
               required
             />
           </div>
