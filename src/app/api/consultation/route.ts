@@ -9,7 +9,7 @@ function validateInput(data: Record<string, unknown>): string | null {
   if (!name || name.length > 50) return '이름이 올바르지 않습니다.';
   if (!/^01[0-9]-?\d{3,4}-?\d{4}$/.test(phone.replace(/\s/g, '')))
     return '연락처가 올바르지 않습니다.';
-  if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email))
+  if (email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email))
     return '이메일이 올바르지 않습니다.';
 
   return null;

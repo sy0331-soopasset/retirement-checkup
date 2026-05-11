@@ -15,8 +15,6 @@ interface Props {
   onSubmitSuccess: (userName: string) => void;
 }
 
-const SERVICE_OPTIONS = ['은퇴준비', '자산관리', '법인설립', '종합상담'];
-
 export default function FormScreen({
   totalScore,
   userAnswers,
@@ -28,21 +26,8 @@ export default function FormScreen({
   const [marketingAgreed, setMarketingAgreed] = useState(false);
   const [name, setName] = useState('');
   const [phone, setPhone] = useState('');
-  const [email, setEmail] = useState('');
-  const [age, setAge] = useState('');
-  const [asset, setAsset] = useState('');
-  const [referral, setReferral] = useState('');
-  const [services, setServices] = useState<string[]>([]);
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState('');
-
-  const toggleService = (service: string) => {
-    setServices((prev) =>
-      prev.includes(service)
-        ? prev.filter((s) => s !== service)
-        : [...prev, service]
-    );
-  };
 
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
@@ -53,7 +38,7 @@ export default function FormScreen({
       return;
     }
 
-    const validation = validateConsultationForm({ name, phone, email });
+    const validation = validateConsultationForm({ name, phone });
     if (!validation.valid) {
       setError(validation.error || '입력 값을 확인해주세요.');
       return;
@@ -76,13 +61,8 @@ export default function FormScreen({
     const formData = {
       name,
       phone,
-      email,
-      age,
-      asset,
-      referral,
       score: `${totalScore}점 / 16점`,
       marketingAgreed,
-      services: services.join(', '),
       answers,
       analysis: {
         excellent: analysis.excellent.join(', '),
@@ -169,7 +149,7 @@ export default function FormScreen({
                 checked={marketingAgreed}
                 onChange={(e) => setMarketingAgreed(e.target.checked)}
               />
-              <span>[선택] 마케팅 정보 수신 및 광고성 정보 전송 동의 (전화·문자·이메일)</span>
+              <span>[선택] 마케팅 정보 수신 및 광고성 정보 전송 동의 (전화 및 문자)</span>
             </label>
           </div>
 
@@ -194,72 +174,6 @@ export default function FormScreen({
               onChange={(e) => setPhone(e.target.value)}
               required
             />
-          </div>
-
-          <div className="form-group">
-            <label>이메일 (필수)</label>
-            <input
-              type="email"
-              placeholder="example@email.com"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              required
-            />
-          </div>
-
-          <div className="form-group">
-            <label>연령대</label>
-            <select value={age} onChange={(e) => setAge(e.target.value)}>
-              <option value="">선택하세요</option>
-              <option value="30대">30대</option>
-              <option value="40대">40대</option>
-              <option value="50대">50대</option>
-              <option value="60대">60대</option>
-              <option value="70대 이상">70대 이상</option>
-            </select>
-          </div>
-
-          <div className="form-group">
-            <label>투자 가능 자산 규모</label>
-            <select value={asset} onChange={(e) => setAsset(e.target.value)}>
-              <option value="">선택하세요</option>
-              <option value="5천만원 미만">5천만원 미만</option>
-              <option value="5천만원~1억원">5천만원~1억원</option>
-              <option value="1억원~3억원">1억원~3억원</option>
-              <option value="3억원~5억원">3억원~5억원</option>
-              <option value="5억원 이상">5억원 이상</option>
-              <option value="답변 안 함">답변 안 함</option>
-            </select>
-          </div>
-
-          <div className="form-group">
-            <label>어디서 알고 오셨나요?</label>
-            <select value={referral} onChange={(e) => setReferral(e.target.value)}>
-              <option value="">선택하세요</option>
-              <option value="검색">검색</option>
-              <option value="광고">광고</option>
-              <option value="유튜브">유튜브</option>
-              <option value="지인소개">지인소개</option>
-              <option value="SNS">SNS</option>
-              <option value="기타">기타</option>
-            </select>
-          </div>
-
-          <div className="form-group">
-            <label>상담 희망 서비스</label>
-            <div className="checkbox-group">
-              {SERVICE_OPTIONS.map((service) => (
-                <div key={service} className="checkbox-item">
-                  <input
-                    type="checkbox"
-                    id={`service-${service}`}
-                    checked={services.includes(service)}
-                    onChange={() => toggleService(service)}
-                  />
-                  <label htmlFor={`service-${service}`}>{service}</label>
-                </div>
-              ))}
-            </div>
           </div>
 
           {error && <p className="form-error">{error}</p>}

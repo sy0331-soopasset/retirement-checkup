@@ -29,16 +29,12 @@ export interface ValidationResult {
 export function validateConsultationForm(data: {
   name: string;
   phone: string;
-  email: string;
 }): ValidationResult {
   if (!validateName(data.name)) {
     return { valid: false, error: '이름을 올바르게 입력해주세요.' };
   }
   if (!validatePhone(data.phone)) {
     return { valid: false, error: '올바른 연락처를 입력해주세요. (예: 010-1234-5678)' };
-  }
-  if (!validateEmail(data.email)) {
-    return { valid: false, error: '올바른 이메일 주소를 입력해주세요.' };
   }
   return { valid: true };
 }
