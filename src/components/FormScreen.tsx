@@ -69,6 +69,7 @@ export default function FormScreen({
       name,
       phone,
       score: `${totalScore}점 / 16점`,
+      privacyAgreed: true,
       marketingAgreed,
       answers,
       analysis: {
