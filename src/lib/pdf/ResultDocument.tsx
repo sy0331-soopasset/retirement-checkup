@@ -451,9 +451,9 @@ export function ResultDocument({ totalScore, stage, analysisGroups, generatedAt 
           </View>
         )}
 
-        {/* 영역별 상세 분석 */}
+        {/* 영역별 상세 분석 — 2페이지 시작 */}
         {(needsWork.length > 0 || analysisGroups.excellent.length > 0) && (
-          <View>
+          <View break>
             <Text style={styles.sectionTitle}>영역별 상세 분석</Text>
 
             {/* 우수 영역 — 한 박스에 묶기 */}
