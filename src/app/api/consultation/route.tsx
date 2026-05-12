@@ -115,7 +115,7 @@ export async function POST(request: NextRequest) {
         );
         pdfBase64 = Buffer.from(pdfBuffer).toString('base64');
       } catch (err) {
-        console.error('PDF generation failed:', err);
+        console.error('PDF generation failed:', JSON.stringify(err, Object.getOwnPropertyNames(err)));
       }
     }
 
