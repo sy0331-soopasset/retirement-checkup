@@ -60,13 +60,8 @@ function parseRich(raw: string): Segment[] {
   return segs;
 }
 
-function RichText({
-  raw,
-  style,
-}: {
-  raw: string;
-  style: object;
-}) {
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+function RichText({ raw, style }: { raw: string; style: any }) {
   const segs = parseRich(raw);
   return (
     <Text style={style}>
@@ -501,7 +496,7 @@ export function ResultDocument({ totalScore, stage, analysisGroups, generatedAt 
               style={styles.insightText}
             />
             <RichText
-              raw="생활비를 충당할 현금흐름이 있으면 의료비가 갑자기 생겨도 흔들리지 않습니다. 현금흐름이 탄탄하면 자녀를 지원하면서도 내 노후 자산은 지킬 수 있습니다. 상속세를 낼 여유 현금이 있으면, 부동산을 급매각할 필요가 없습니다. 결국 은퇴 설계의 모든 고민은 **\"매달 얼마의 현금이, 어디서, 어떻게 들어오는가\"**로 귀결됩니다."
+              raw={'생활비를 충당할 현금흐름이 있으면 의료비가 갑자기 생겨도 흔들리지 않습니다. 현금흐름이 탄탄하면 자녀를 지원하면서도 내 노후 자산은 지킬 수 있습니다. 상속세를 낼 여유 현금이 있으면, 부동산을 급매각할 필요가 없습니다. 결국 은퇴 설계의 모든 고민은 **"매달 얼마의 현금이, 어디서, 어떻게 들어오는가"**로 귀결됩니다.'}
               style={styles.insightText}
             />
             <RichText
