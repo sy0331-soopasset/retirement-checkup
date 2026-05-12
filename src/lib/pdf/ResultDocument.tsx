@@ -90,6 +90,18 @@ const shortBullets: Record<number, string> = {
   7: '세금 납부용 현금이 없으면 부동산을 급매각해야 하는 위기가 생깁니다.',
 };
 
+// ── 우수 항목 짧은 코멘트 ──
+const excellentTexts: Record<number, string> = {
+  0: '목표 생활비가 명확히 수립되어 있습니다. 은퇴 후 지출 구조 변화를 주기적으로 점검해 수치를 최신 상태로 유지하세요.',
+  1: '연금 자산이 잘 파악되어 있습니다. 이제 세금을 최소화하고 수령 시기를 최적화하는 전략적 접근이 필요합니다.',
+  2: '안정적인 현금흐름 자산을 확보하셨습니다. 세금 효율성과 인플레이션 대응을 고려한 포트폴리오 리밸런싱이 중요합니다.',
+  3: '주거 전략이 구체적으로 수립되어 있습니다. 주거 변화에 따른 현금흐름 영향을 주기적으로 점검하세요.',
+  4: '충분한 비상자금을 확보하고 계십니다. 나머지 자산을 현금흐름 창출에 집중시킬 수 있는 안정적인 기반이 됩니다.',
+  5: '의료비 대비가 충분히 준비되어 있습니다. 보험 만기 시점과 보장 내용을 정기적으로 재검토하세요.',
+  6: '자녀 지원 계획이 명확합니다. 증여세 절세 전략과 지원 시기 최적화로 세금 부담을 최소화하세요.',
+  7: '세금 계획이 잘 수립되어 있습니다. 정기적인 리뷰와 세법 변화 모니터링으로 계획을 업데이트하세요.',
+};
+
 // ── 영역별 상세 분석 ──
 const cashflowTexts: Record<number, { lacking: string; normal: string }> = {
   0: {
@@ -244,6 +256,25 @@ const styles = StyleSheet.create({
   statusOk:      { fontSize: 9, color: C.primary,  fontWeight: 700 },
   statusCaution: { fontSize: 9, color: C.caution,  fontWeight: 700 },
   statusUrgent:  { fontSize: 9, color: C.urgent,   fontWeight: 700 },
+
+  // ── 우수 항목 블록 ──
+  excellentBlock: {
+    borderLeftWidth: 3,
+    borderLeftColor: '#2E7D32',
+    backgroundColor: '#F1F8F1',
+    padding: 10,
+    marginBottom: 8,
+  },
+  excellentName: { fontSize: 10, fontWeight: 700, color: C.text, marginBottom: 3 },
+  excellentDesc: { fontSize: 9, color: '#3A3A3A', lineHeight: 1.55 },
+  subLabel: {
+    fontSize: 8.5,
+    fontWeight: 700,
+    color: '#2E7D32',
+    marginBottom: 6,
+    marginTop: 2,
+  },
+  divider: { height: 1, backgroundColor: C.border, marginVertical: 10 },
 
   // ── 불릿 행 ──
   bulletRow: { flexDirection: 'row', marginBottom: 4, alignItems: 'flex-start' },
@@ -427,9 +458,27 @@ export function ResultDocument({ totalScore, stage, analysisGroups, generatedAt 
         )}
 
         {/* 영역별 상세 분석 */}
-        {needsWork.length > 0 && (
+        {(needsWork.length > 0 || analysisGroups.excellent.length > 0) && (
           <View>
             <Text style={styles.sectionTitle}>영역별 상세 분석</Text>
+
+            {/* 우수 영역 */}
+            {analysisGroups.excellent.length > 0 && (
+              <View>
+                <Text style={styles.subLabel}>우수</Text>
+                {analysisGroups.excellent.map((item) => (
+                  <View key={item.index} style={styles.excellentBlock} wrap={false}>
+                    <Text style={styles.excellentName}>{item.name}</Text>
+                    <Text style={styles.excellentDesc}>
+                      {excellentTexts[item.index] ?? item.feedback}
+                    </Text>
+                  </View>
+                ))}
+                {needsWork.length > 0 && <View style={styles.divider} />}
+              </View>
+            )}
+
+            {/* 보완·시급 영역 */}
             {needsWork.map((item) => {
               const isUrgent = item.score === 0;
               const raw = cashflowTexts[item.index]?.[isUrgent ? 'lacking' : 'normal'] ?? item.feedback;
