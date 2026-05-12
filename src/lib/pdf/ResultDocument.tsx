@@ -309,8 +309,6 @@ const styles = StyleSheet.create({
   notice: {
     marginTop: 6,
     padding: 10,
-    borderTopWidth: 1,
-    borderTopColor: C.border,
   },
   noticeTitle: { fontSize: 8.5, fontWeight: 700, color: C.sub, marginBottom: 4 },
   noticeText:  { fontSize: 7.5, color: C.sub, lineHeight: 1.5, marginBottom: 2 },
@@ -470,7 +468,7 @@ export function ResultDocument({ totalScore, stage, analysisGroups, generatedAt 
                     </View>
                   ))}
                 </View>
-                {needsWork.length > 0 && <View style={styles.divider} />}
+                {needsWork.length > 0 && <View style={{ marginBottom: 8 }} />}
               </View>
             )}
 
