@@ -175,23 +175,23 @@ const styles = StyleSheet.create({
     flex: 3,
     padding: 16,
     backgroundColor: C.bg,
+    justifyContent: 'flex-start',
   },
-  scoreLabel: { fontSize: 8, color: C.sub, marginBottom: 8, letterSpacing: 0.5 },
+  scoreLabel: { fontSize: 8, color: C.sub, marginBottom: 10, letterSpacing: 0.5 },
   scoreStage: { fontSize: 20, fontWeight: 700, color: C.primary },
   scoreDesc: { fontSize: 11, fontWeight: 700, marginTop: 2 },
-  stageDotsRow: { flexDirection: 'row', gap: 6, marginTop: 14 },
+  stageDotsRow: { flexDirection: 'row', gap: 6, marginTop: 20 },
   dotActive:   { width: 9, height: 9, borderRadius: 5, backgroundColor: C.primary },
   dotInactive: { width: 9, height: 9, borderRadius: 5, backgroundColor: C.border },
   scoreRight: {
     flex: 2,
     backgroundColor: C.primary,
-    justifyContent: 'center',
+    justifyContent: 'flex-start',
     alignItems: 'center',
     padding: 16,
   },
-  scoreRightLabel: { fontSize: 8, color: 'rgba(255,255,255,0.65)', marginBottom: 6, letterSpacing: 0.5 },
-  scoreNum: { fontSize: 32, fontWeight: 700, color: C.white, lineHeight: 1 },
-  scoreOutOf: { fontSize: 11, color: 'rgba(255,255,255,0.65)' },
+  scoreRightLabel: { fontSize: 8, color: 'rgba(255,255,255,0.65)', marginBottom: 10, letterSpacing: 0.5 },
+  scoreNum: { fontSize: 20, fontWeight: 700, color: C.white, lineHeight: 1 },
 
   // ── 공통 섹션 박스 (진단요약 / 보완이유 / 인사이트 / 다음단계) ──
   sectionBox: {
@@ -217,9 +217,6 @@ const styles = StyleSheet.create({
     fontSize: 10,
     fontWeight: 700,
     color: C.primary,
-    borderBottomWidth: 1,
-    borderBottomColor: C.border,
-    paddingBottom: 5,
     marginBottom: 8,
     marginTop: 4,
   },
@@ -257,23 +254,23 @@ const styles = StyleSheet.create({
   statusCaution: { fontSize: 9, color: C.caution,  fontWeight: 700 },
   statusUrgent:  { fontSize: 9, color: C.urgent,   fontWeight: 700 },
 
-  // ── 우수 항목 블록 ──
-  excellentBlock: {
+  // ── 우수 항목 블록 (전체 한 박스) ──
+  excellentGroupBlock: {
     borderLeftWidth: 3,
     borderLeftColor: '#2E7D32',
     backgroundColor: '#F1F8F1',
     padding: 10,
     marginBottom: 8,
   },
-  excellentName: { fontSize: 10, fontWeight: 700, color: C.text, marginBottom: 3 },
-  excellentDesc: { fontSize: 9, color: '#3A3A3A', lineHeight: 1.55 },
-  subLabel: {
-    fontSize: 8.5,
-    fontWeight: 700,
-    color: '#2E7D32',
-    marginBottom: 6,
-    marginTop: 2,
+  excellentBadge: {
+    fontSize: 8, fontWeight: 700, color: C.white, backgroundColor: '#2E7D32',
+    paddingHorizontal: 5, paddingVertical: 2,
+    alignSelf: 'flex-start',
+    marginBottom: 8,
   },
+  excellentItem: { marginTop: 8 },
+  excellentName: { fontSize: 10, fontWeight: 700, color: C.text, marginBottom: 2 },
+  excellentDesc: { fontSize: 9, color: '#3A3A3A', lineHeight: 1.55 },
   divider: { height: 1, backgroundColor: C.border, marginVertical: 10 },
 
   // ── 불릿 행 ──
@@ -391,11 +388,8 @@ export function ResultDocument({ totalScore, stage, analysisGroups, generatedAt 
             </View>
           </View>
           <View style={styles.scoreRight}>
-            <Text style={styles.scoreRightLabel}>총  점</Text>
-            <View style={{ flexDirection: 'row', alignItems: 'baseline', gap: 4 }}>
-              <Text style={styles.scoreNum}>{totalScore}</Text>
-              <Text style={styles.scoreOutOf}>(16점 만점)</Text>
-            </View>
+            <Text style={styles.scoreRightLabel}>총점(16점 만점)</Text>
+            <Text style={styles.scoreNum}>{totalScore}</Text>
           </View>
         </View>
 
@@ -462,18 +456,20 @@ export function ResultDocument({ totalScore, stage, analysisGroups, generatedAt 
           <View>
             <Text style={styles.sectionTitle}>영역별 상세 분석</Text>
 
-            {/* 우수 영역 */}
+            {/* 우수 영역 — 한 박스에 묶기 */}
             {analysisGroups.excellent.length > 0 && (
               <View>
-                <Text style={styles.subLabel}>우수</Text>
-                {analysisGroups.excellent.map((item) => (
-                  <View key={item.index} style={styles.excellentBlock} wrap={false}>
-                    <Text style={styles.excellentName}>{item.name}</Text>
-                    <Text style={styles.excellentDesc}>
-                      {excellentTexts[item.index] ?? item.feedback}
-                    </Text>
-                  </View>
-                ))}
+                <View style={styles.excellentGroupBlock} wrap={false}>
+                  <Text style={styles.excellentBadge}>우수</Text>
+                  {analysisGroups.excellent.map((item, idx) => (
+                    <View key={item.index} style={idx > 0 ? styles.excellentItem : undefined}>
+                      <Text style={styles.excellentName}>{item.name}</Text>
+                      <Text style={styles.excellentDesc}>
+                        {excellentTexts[item.index] ?? item.feedback}
+                      </Text>
+                    </View>
+                  ))}
+                </View>
                 {needsWork.length > 0 && <View style={styles.divider} />}
               </View>
             )}
