@@ -179,7 +179,7 @@ const styles = StyleSheet.create({
   },
   scoreRightLabel: { fontSize: 8, color: 'rgba(255,255,255,0.65)', marginBottom: 6, letterSpacing: 0.5 },
   scoreNum: { fontSize: 32, fontWeight: 700, color: C.white, lineHeight: 1 },
-  scoreOutOf: { fontSize: 14, color: 'rgba(255,255,255,0.65)', marginTop: 4 },
+  scoreOutOf: { fontSize: 11, color: 'rgba(255,255,255,0.65)' },
 
   // ── 공통 섹션 박스 (진단요약 / 보완이유 / 인사이트 / 다음단계) ──
   sectionBox: {
@@ -349,8 +349,10 @@ export function ResultDocument({ totalScore, stage, analysisGroups, generatedAt 
         <View style={styles.scoreCard}>
           <View style={styles.scoreLeft}>
             <Text style={styles.scoreLabel}>종합 진단 결과</Text>
-            <Text style={styles.scoreStage}>{stageInfo.name}</Text>
-            <Text style={[styles.scoreDesc, { color: stageInfo.descColor }]}>{stageInfo.desc}</Text>
+            <View style={{ flexDirection: 'row', alignItems: 'baseline', gap: 8, flexWrap: 'wrap' }}>
+              <Text style={styles.scoreStage}>{stageInfo.name}</Text>
+              <Text style={[styles.scoreDesc, { color: stageInfo.descColor }]}>{stageInfo.desc}</Text>
+            </View>
             <View style={styles.stageDotsRow}>
               <View style={stageInfo.dots[0] ? styles.dotActive : styles.dotInactive} />
               <View style={stageInfo.dots[1] ? styles.dotActive : styles.dotInactive} />
@@ -359,8 +361,10 @@ export function ResultDocument({ totalScore, stage, analysisGroups, generatedAt 
           </View>
           <View style={styles.scoreRight}>
             <Text style={styles.scoreRightLabel}>총  점</Text>
-            <Text style={styles.scoreNum}>{totalScore}</Text>
-            <Text style={styles.scoreOutOf}>/ 16점</Text>
+            <View style={{ flexDirection: 'row', alignItems: 'baseline', gap: 4 }}>
+              <Text style={styles.scoreNum}>{totalScore}</Text>
+              <Text style={styles.scoreOutOf}>(16점 만점)</Text>
+            </View>
           </View>
         </View>
 
