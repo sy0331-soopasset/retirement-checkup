@@ -375,7 +375,7 @@ export function ResultDocument({ totalScore, stage, analysisGroups, generatedAt 
         <View style={styles.scoreCard}>
           <View style={styles.scoreLeft}>
             <Text style={styles.scoreLabel}>종합 진단 결과</Text>
-            <View style={{ flexDirection: 'row', alignItems: 'baseline', gap: 8, flexWrap: 'wrap' }}>
+            <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8, flexWrap: 'wrap' }}>
               <Text style={styles.scoreStage}>{stageInfo.name}</Text>
               <Text style={[styles.scoreDesc, { color: stageInfo.descColor }]}>{stageInfo.desc}</Text>
             </View>
