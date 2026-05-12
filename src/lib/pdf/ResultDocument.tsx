@@ -27,14 +27,17 @@ const COLORS = {
   green: '#2E7D32',
   greenLight: '#E8F5E9',
   greenMid: '#4CAF50',
+  greenRow: '#F1F8F1',
   yellow: '#F9A825',
   yellowLight: '#FFFDE7',
   orange: '#E65100',
   orangeLight: '#FFF3E0',
   orangeBorder: '#FF8F00',
+  orangeRow: '#FFF8F0',
   red: '#B71C1C',
   redLight: '#FFEBEE',
   redBorder: '#E53935',
+  redRow: '#FFF0F0',
   gray: '#555555',
   grayLight: '#F5F5F5',
   grayMid: '#E0E0E0',
@@ -43,7 +46,6 @@ const COLORS = {
   white: '#FFFFFF',
 };
 
-// **...**로 감싸진 부분을 bold로 파싱
 type Segment = { text: string; bold?: boolean };
 
 function parseRich(raw: string): Segment[] {
@@ -78,7 +80,31 @@ function RichText({ raw, style }: { raw: string; style: any }) {
   );
 }
 
-// cashflowConnections — **...** 볼드 마크업 포함
+// 테이블 항목별 현재 수준 레이블
+const responseLevelLabels: Record<number, { excellent: string; normal: string; lacking: string }> = {
+  0: { excellent: '생활비 목표 수립 완료', normal: '대략적으로 파악 중', lacking: '목표 생활비 미설정' },
+  1: { excellent: '연금 수령액 파악 완료', normal: '부분적으로 확인한 상태', lacking: '수령액 미확인' },
+  2: { excellent: '현금흐름 자산 충분히 보유', normal: '일부 현금흐름 자산 있음', lacking: '현금흐름 자산 없음' },
+  3: { excellent: '주거 전략 수립 완료', normal: '방향 고민 중', lacking: '주거 전략 미수립' },
+  4: { excellent: '6개월 이상 비상자금 확보', normal: '일부 비상자금 있음', lacking: '비상자금 없음' },
+  5: { excellent: '의료비 충분히 준비됨', normal: '어느 정도 대비 중', lacking: '의료비 준비 없음' },
+  6: { excellent: '자녀 지원 한도 명확히 설정', normal: '기준 있으나 불명확', lacking: '지원 한도 미설정' },
+  7: { excellent: '상속·증여 계획 수립 완료', normal: '세금 규모 파악 중', lacking: '세금 계획 없음' },
+};
+
+// 보완 필요 이유 — 한 줄 요약
+const shortBullets: Record<number, string> = {
+  0: '목표 생활비가 없으면 필요한 현금흐름 규모를 설계할 수 없습니다.',
+  1: '연금 수령액을 모르면 월 부족분 계산 자체가 불가능합니다.',
+  2: '이자·적금을 꺼내 쓰는 방식은 언젠가 원금이 바닥나는 구조입니다.',
+  3: '주거 전략 하나로 수억 원의 현금흐름 자산 규모가 달라집니다.',
+  4: '비상자금이 없으면 긴급 상황에 수익 자산을 손실 상태로 매각해야 합니다.',
+  5: '65세 이후 연평균 의료비 300~500만 원 — 계획 없이는 현금흐름이 흔들립니다.',
+  6: '한도 없는 자녀 지원은 원금 소진 속도를 예상보다 훨씬 빠르게 만듭니다.',
+  7: '세금 납부용 현금이 없으면 부동산을 급매각해야 하는 위기가 생깁니다.',
+};
+
+// 영역별 상세 분석 — **...** 볼드 마크업 포함
 const cashflowTexts: Record<number, { lacking: string; normal: string }> = {
   0: {
     lacking:
@@ -157,7 +183,6 @@ const styles = StyleSheet.create({
     backgroundColor: COLORS.tealLight,
     borderLeftWidth: 4,
     borderLeftColor: COLORS.teal,
-    padding: 0,
     marginBottom: 14,
     overflow: 'hidden',
   },
@@ -166,25 +191,14 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     alignItems: 'stretch',
   },
-  scoreLeft: {
-    flex: 1,
-    padding: 14,
-  },
+  scoreLeft: { flex: 1, padding: 14 },
   scoreLabel: { fontSize: 9, color: COLORS.gray, marginBottom: 6 },
   scoreStageRow: { flexDirection: 'row', alignItems: 'center', gap: 8 },
   scoreStage: { fontSize: 18, fontWeight: 700, color: COLORS.tealDark },
   scoreDesc: { fontSize: 12, fontWeight: 700 },
-  // 단계 진행 점 (씨앗 ● ○ ○ / 나무 ● ● ○ / 숲 ● ● ●)
   stageDotsRow: { flexDirection: 'row', gap: 5, marginTop: 8 },
-  dotActive: {
-    width: 8, height: 8, borderRadius: 4,
-    backgroundColor: COLORS.teal,
-  },
-  dotInactive: {
-    width: 8, height: 8, borderRadius: 4,
-    backgroundColor: COLORS.grayMid,
-  },
-  // 점수 오른쪽 패널
+  dotActive: { width: 8, height: 8, borderRadius: 4, backgroundColor: COLORS.teal },
+  dotInactive: { width: 8, height: 8, borderRadius: 4, backgroundColor: COLORS.grayMid },
   scoreRight: {
     backgroundColor: COLORS.teal,
     paddingHorizontal: 18,
@@ -207,12 +221,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 10,
     paddingVertical: 4,
   },
-  introLabelText: {
-    fontSize: 9,
-    fontWeight: 700,
-    color: COLORS.white,
-    letterSpacing: 0.5,
-  },
+  introLabelText: { fontSize: 9, fontWeight: 700, color: COLORS.white, letterSpacing: 0.5 },
   introBody: {
     backgroundColor: COLORS.white,
     padding: 12,
@@ -221,28 +230,82 @@ const styles = StyleSheet.create({
     borderColor: COLORS.grayMid,
   },
   introText: { fontSize: 10, lineHeight: 1.65, color: COLORS.text },
-  // ── 잘 준비된 영역 ──
-  excellentWrap: {
+  // ── 요약 테이블 ──
+  tableWrap: {
+    marginBottom: 14,
+    borderWidth: 1,
+    borderColor: COLORS.border,
+  },
+  tableHeaderRow: {
+    flexDirection: 'row',
+    backgroundColor: COLORS.tealDark,
+  },
+  tableHeaderCellFirst: {
+    flex: 3,
+    padding: 6,
+    color: COLORS.white,
+    fontWeight: 700,
+    fontSize: 9,
+  },
+  tableHeaderCell: {
+    padding: 6,
+    color: COLORS.white,
+    fontWeight: 700,
+    fontSize: 9,
+    borderLeftWidth: 1,
+    borderLeftColor: 'rgba(255,255,255,0.25)',
+  },
+  tableHeaderCellMid: { flex: 5 },
+  tableHeaderCellRight: { flex: 3 },
+  tableRow: {
+    flexDirection: 'row',
+    borderTopWidth: 1,
+    borderTopColor: COLORS.border,
+  },
+  rowExcellent: { backgroundColor: COLORS.greenRow },
+  rowNormal: { backgroundColor: COLORS.orangeRow },
+  rowLacking: { backgroundColor: COLORS.redRow },
+  tableCellFirst: { flex: 3, padding: 7 },
+  tableCellMid: {
+    flex: 5,
+    padding: 7,
+    borderLeftWidth: 1,
+    borderLeftColor: COLORS.border,
+  },
+  tableCellRight: {
+    flex: 3,
+    padding: 7,
+    borderLeftWidth: 1,
+    borderLeftColor: COLORS.border,
+    justifyContent: 'center',
+  },
+  cellText: { fontSize: 9, lineHeight: 1.4 },
+  cellTextBold: { fontSize: 9, fontWeight: 700, lineHeight: 1.4 },
+  statusExcellent: { fontSize: 9, fontWeight: 700, color: COLORS.green },
+  statusNormal: { fontSize: 9, fontWeight: 700, color: COLORS.orange },
+  statusLacking: { fontSize: 9, fontWeight: 700, color: COLORS.red },
+  // ── 보완 필요 이유 ──
+  bulletWrap: {
     marginBottom: 14,
     overflow: 'hidden',
     borderWidth: 1,
-    borderColor: COLORS.greenMid,
+    borderColor: COLORS.orangeBorder,
   },
-  excellentHeader: {
-    backgroundColor: COLORS.green,
+  bulletHeader: {
+    backgroundColor: COLORS.orange,
     paddingHorizontal: 10,
     paddingVertical: 5,
+  },
+  bulletHeaderText: { fontSize: 10, fontWeight: 700, color: COLORS.white },
+  bulletBody: { backgroundColor: COLORS.orangeLight, padding: 10 },
+  bulletRow: {
     flexDirection: 'row',
-    alignItems: 'center',
-    gap: 4,
+    marginBottom: 5,
+    alignItems: 'flex-start',
   },
-  excellentHeaderText: { fontSize: 10, fontWeight: 700, color: COLORS.white },
-  excellentBody: {
-    backgroundColor: COLORS.greenLight,
-    padding: 10,
-  },
-  excellentText: { fontSize: 9, color: COLORS.text, lineHeight: 1.55 },
-  // ── 현황 분석 섹션 타이틀 ──
+  bulletMark: { fontSize: 9, color: COLORS.orange, fontWeight: 700, marginRight: 6 },
+  bulletText: { flex: 1, fontSize: 9, color: COLORS.text, lineHeight: 1.55 },
+  // ── 섹션 타이틀 ──
   sectionTitleWrap: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -255,17 +318,9 @@ const styles = StyleSheet.create({
     paddingHorizontal: 8,
     paddingVertical: 3,
   },
-  sectionTitleChipText: {
-    fontSize: 10,
-    fontWeight: 700,
-    color: COLORS.white,
-  },
-  sectionTitleLine: {
-    flex: 1,
-    height: 1,
-    backgroundColor: COLORS.border,
-  },
-  // ── 시급 / 보완 분석 항목 ──
+  sectionTitleChipText: { fontSize: 10, fontWeight: 700, color: COLORS.white },
+  sectionTitleLine: { flex: 1, height: 1, backgroundColor: COLORS.border },
+  // ── 상세 분석 항목 ──
   urgentBlock: {
     backgroundColor: COLORS.redLight,
     borderLeftWidth: 3,
@@ -280,12 +335,7 @@ const styles = StyleSheet.create({
     padding: 10,
     marginBottom: 8,
   },
-  itemHeaderRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    marginBottom: 5,
-    gap: 5,
-  },
+  itemHeaderRow: { flexDirection: 'row', alignItems: 'center', marginBottom: 5, gap: 5 },
   urgentBadge: {
     fontSize: 8, fontWeight: 700, color: COLORS.white,
     backgroundColor: COLORS.red,
@@ -312,10 +362,7 @@ const styles = StyleSheet.create({
     paddingVertical: 5,
   },
   insightHeaderText: { fontSize: 10, fontWeight: 700, color: COLORS.white },
-  insightBody: {
-    backgroundColor: COLORS.greenLight,
-    padding: 12,
-  },
+  insightBody: { backgroundColor: COLORS.greenLight, padding: 12 },
   insightText: { fontSize: 9, color: COLORS.text, lineHeight: 1.65, marginBottom: 6 },
   insightTextLast: { fontSize: 9, color: COLORS.text, lineHeight: 1.65 },
   // ── 다음 단계 ──
@@ -331,10 +378,7 @@ const styles = StyleSheet.create({
     paddingVertical: 5,
   },
   conclusionHeaderText: { fontSize: 10, fontWeight: 700, color: COLORS.white },
-  conclusionBody: {
-    backgroundColor: COLORS.yellowLight,
-    padding: 12,
-  },
+  conclusionBody: { backgroundColor: COLORS.yellowLight, padding: 12 },
   conclusionText: { fontSize: 9, color: COLORS.text, lineHeight: 1.65 },
   // ── 유의사항 ──
   notice: {
@@ -378,7 +422,20 @@ function getStageIntroText(stage: Stage, totalScore: number): string {
 export function ResultDocument({ totalScore, stage, analysisGroups, generatedAt }: Props) {
   const stageInfo = getStageInfo(stage);
   const introText = getStageIntroText(stage, totalScore);
-  const needsWork = [...analysisGroups.lacking, ...analysisGroups.normal];
+
+  // 모든 항목을 index 순으로 정렬 (테이블용)
+  type CatItem = AnalysisItem & { cat: 'excellent' | 'normal' | 'lacking' };
+  const allItemsSorted: CatItem[] = [
+    ...analysisGroups.excellent.map((i) => ({ ...i, cat: 'excellent' as const })),
+    ...analysisGroups.normal.map((i) => ({ ...i, cat: 'normal' as const })),
+    ...analysisGroups.lacking.map((i) => ({ ...i, cat: 'lacking' as const })),
+  ].sort((a, b) => a.index - b.index);
+
+  // 보완 필요 항목 (lacking → normal 순)
+  const needsWork = [
+    ...analysisGroups.lacking,
+    ...analysisGroups.normal,
+  ];
 
   return (
     <Document
@@ -434,31 +491,71 @@ export function ResultDocument({ totalScore, stage, analysisGroups, generatedAt 
           </View>
         </View>
 
-        {/* 잘 준비된 영역 */}
-        {analysisGroups.excellent.length > 0 && (
-          <View style={styles.excellentWrap} wrap={false}>
-            <View style={styles.excellentHeader}>
-              <Text style={styles.excellentHeaderText}>
-                잘 준비된 영역
-              </Text>
+        {/* 진단 결과 요약 테이블 */}
+        <View style={styles.tableWrap} wrap={false}>
+          {/* 테이블 헤더 */}
+          <View style={styles.tableHeaderRow}>
+            <Text style={styles.tableHeaderCellFirst}>영역</Text>
+            <Text style={[styles.tableHeaderCell, styles.tableHeaderCellMid]}>현재 수준</Text>
+            <Text style={[styles.tableHeaderCell, styles.tableHeaderCellRight]}>확인된 상태</Text>
+          </View>
+          {/* 테이블 행 */}
+          {allItemsSorted.map((item) => {
+            const rowStyle =
+              item.cat === 'excellent' ? styles.rowExcellent
+              : item.cat === 'normal' ? styles.rowNormal
+              : styles.rowLacking;
+            const statusStyle =
+              item.cat === 'excellent' ? styles.statusExcellent
+              : item.cat === 'normal' ? styles.statusNormal
+              : styles.statusLacking;
+            const statusText =
+              item.cat === 'excellent' ? '준비 완료'
+              : item.cat === 'normal' ? '보완 필요'
+              : '시급 보완';
+            const levelText =
+              responseLevelLabels[item.index]?.[item.cat] ?? item.name;
+            return (
+              <View key={item.index} style={[styles.tableRow, rowStyle]}>
+                <View style={styles.tableCellFirst}>
+                  <Text style={item.cat !== 'excellent' ? styles.cellTextBold : styles.cellText}>
+                    {item.name}
+                  </Text>
+                </View>
+                <View style={styles.tableCellMid}>
+                  <Text style={styles.cellText}>{levelText}</Text>
+                </View>
+                <View style={styles.tableCellRight}>
+                  <Text style={statusStyle}>{statusText}</Text>
+                </View>
+              </View>
+            );
+          })}
+        </View>
+
+        {/* 보완이 필요한 이유 */}
+        {needsWork.length > 0 && (
+          <View style={styles.bulletWrap} wrap={false}>
+            <View style={styles.bulletHeader}>
+              <Text style={styles.bulletHeaderText}>지금 보완이 필요한 이유</Text>
             </View>
-            <View style={styles.excellentBody}>
-              <Text style={styles.excellentText}>
-                <Text style={{ fontWeight: 700 }}>
-                  {analysisGroups.excellent.map((e) => e.name).join(', ')}
-                </Text>
-                {' '}영역은 충분히 준비되어 있습니다. 이 부분들이 은퇴 설계의 기반을 형성하고 있으며, 아래 보완 영역들이 채워지면 훨씬 더 탄탄한 구조가 완성됩니다.
-              </Text>
+            <View style={styles.bulletBody}>
+              {needsWork.map((item) => (
+                <View key={item.index} style={styles.bulletRow}>
+                  <Text style={styles.bulletMark}>•</Text>
+                  <Text style={styles.bulletText}>{shortBullets[item.index] ?? item.feedback}</Text>
+                </View>
+              ))}
             </View>
           </View>
         )}
 
-        {/* 현황 분석 */}
+        {/* 영역별 상세 분석 */}
         {needsWork.length > 0 && (
           <View>
             <View style={styles.sectionTitleWrap}>
               <View style={styles.sectionTitleChip}>
-                <Text style={styles.sectionTitleChipText}>현황 분석</Text>
+                <Text style={styles.sectionTitleChipText}>영역별 상세 분석</Text>
               </View>
               <View style={styles.sectionTitleLine} />
             </View>
