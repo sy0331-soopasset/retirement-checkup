@@ -59,14 +59,27 @@ export default function FormScreen({
 
     const answers: Record<string, string> = {};
     const analysis = { excellent: [] as string[], normal: [] as string[], lacking: [] as string[] };
+    const analysisGroups = {
+      excellent: [] as { index: number; name: string; score: number; feedback: string }[],
+      normal: [] as { index: number; name: string; score: number; feedback: string }[],
+      lacking: [] as { index: number; name: string; score: number; feedback: string }[],
+    };
 
     for (let i = 0; i < questions.length; i++) {
       answers[`Q${i + 1}`] = userAnswers[i];
-      const categoryName = feedbackMessages[i].name;
       const score = itemScores[i];
-      if (score === 2) analysis.excellent.push(categoryName);
-      else if (score === 1) analysis.normal.push(categoryName);
-      else analysis.lacking.push(categoryName);
+      const categoryName = feedbackMessages[i].name;
+      const item = { index: i, name: categoryName, score, feedback: feedbackMessages[i][score] };
+      if (score === 2) {
+        analysis.excellent.push(categoryName);
+        analysisGroups.excellent.push(item);
+      } else if (score === 1) {
+        analysis.normal.push(categoryName);
+        analysisGroups.normal.push(item);
+      } else {
+        analysis.lacking.push(categoryName);
+        analysisGroups.lacking.push(item);
+      }
     }
 
     const formData = {
@@ -88,6 +101,9 @@ export default function FormScreen({
         term: utmParams.utm_term || '',
         content: utmParams.utm_content || '',
       },
+      stage,
+      totalScoreNum: totalScore,
+      analysisGroups,
     };
 
     try {

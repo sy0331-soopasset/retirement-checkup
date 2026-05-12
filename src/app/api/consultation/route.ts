@@ -1,4 +1,10 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { renderToBuffer } from '@react-pdf/renderer';
+import React from 'react';
+import { ResultDocument } from '@/lib/pdf/ResultDocument';
+import type { AnalysisItem, Stage } from '@/lib/types';
+
+export const runtime = 'nodejs';
 
 // 서버 사이드 입력 검증
 function validateInput(data: Record<string, unknown>): string | null {
@@ -39,6 +45,13 @@ function sanitizeObject(obj: Record<string, unknown>): Record<string, unknown> {
   return result;
 }
 
+function formatDate(d: Date): string {
+  const y = d.getFullYear();
+  const m = String(d.getMonth() + 1).padStart(2, '0');
+  const day = String(d.getDate()).padStart(2, '0');
+  return `${y}-${m}-${day}`;
+}
+
 // Rate limiting (in-memory, 프로세스 단위)
 const requestCounts = new Map<string, { count: number; resetAt: number }>();
 const RATE_LIMIT = 5; // 분당 최대 요청 수
@@ -74,8 +87,11 @@ export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
 
+    // PDF용 필드 추출 (sanitize 전에 분리)
+    const { stage, totalScoreNum, analysisGroups, ...restBody } = body;
+
     // 서버 사이드 입력 검증
-    const validationError = validateInput(body);
+    const validationError = validateInput(restBody);
     if (validationError) {
       return NextResponse.json(
         { result: 'error', error: validationError },
@@ -83,8 +99,26 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // 입력 데이터 sanitize
-    const sanitizedData = sanitizeObject(body);
+    // 입력 데이터 sanitize (구글 시트용 필드만)
+    const sanitizedData = sanitizeObject(restBody);
+
+    // PDF 생성
+    let pdfBase64: string | undefined;
+    if (stage && analysisGroups) {
+      try {
+        const pdfBuffer = await renderToBuffer(
+          React.createElement(ResultDocument, {
+            totalScore: typeof totalScoreNum === 'number' ? totalScoreNum : 0,
+            stage: stage as Stage,
+            analysisGroups: analysisGroups as { excellent: AnalysisItem[]; normal: AnalysisItem[]; lacking: AnalysisItem[] },
+            generatedAt: formatDate(new Date()),
+          })
+        );
+        pdfBase64 = Buffer.from(pdfBuffer).toString('base64');
+      } catch (err) {
+        console.error('PDF generation failed:', err);
+      }
+    }
 
     // Google Apps Script로 전송 (URL은 서버 환경변수에서만 접근)
     const scriptUrl = process.env.GOOGLE_SCRIPT_URL;
@@ -99,7 +133,7 @@ export async function POST(request: NextRequest) {
     const response = await fetch(scriptUrl, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(sanitizedData),
+      body: JSON.stringify({ ...sanitizedData, ...(pdfBase64 ? { pdfBase64 } : {}) }),
     });
 
     const data = await response.json();
