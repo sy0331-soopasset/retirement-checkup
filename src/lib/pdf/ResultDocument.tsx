@@ -179,7 +179,7 @@ const styles = StyleSheet.create({
   },
   scoreLabel: { fontSize: 8, color: C.sub, marginBottom: 10, letterSpacing: 0.5 },
   scoreStage: { fontSize: 20, fontWeight: 700, color: C.primary },
-  scoreDesc: { fontSize: 11, fontWeight: 700, paddingTop: 4 },
+  scoreDesc: { fontSize: 11, fontWeight: 700, paddingTop: 8 },
   stageDotsRow: { flexDirection: 'row', gap: 6, marginTop: 20 },
   dotActive:   { width: 9, height: 9, borderRadius: 5, backgroundColor: C.primary },
   dotInactive: { width: 9, height: 9, borderRadius: 5, backgroundColor: C.border },
