@@ -1,6 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { renderToBuffer } from '@react-pdf/renderer';
-import React from 'react';
 import { ResultDocument } from '@/lib/pdf/ResultDocument';
 import type { AnalysisItem, Stage } from '@/lib/types';
 
@@ -107,12 +106,12 @@ export async function POST(request: NextRequest) {
     if (stage && analysisGroups) {
       try {
         const pdfBuffer = await renderToBuffer(
-          React.createElement(ResultDocument, {
-            totalScore: typeof totalScoreNum === 'number' ? totalScoreNum : 0,
-            stage: stage as Stage,
-            analysisGroups: analysisGroups as { excellent: AnalysisItem[]; normal: AnalysisItem[]; lacking: AnalysisItem[] },
-            generatedAt: formatDate(new Date()),
-          })
+          <ResultDocument
+            totalScore={typeof totalScoreNum === 'number' ? totalScoreNum : 0}
+            stage={stage as Stage}
+            analysisGroups={analysisGroups as { excellent: AnalysisItem[]; normal: AnalysisItem[]; lacking: AnalysisItem[] }}
+            generatedAt={formatDate(new Date())}
+          />
         );
         pdfBase64 = Buffer.from(pdfBuffer).toString('base64');
       } catch (err) {
