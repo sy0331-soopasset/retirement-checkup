@@ -129,10 +129,24 @@ export async function POST(request: NextRequest) {
       );
     }
 
+    // 단계명 한글 변환 (Apps Script가 잘못 계산하는 문제 방지)
+    const stageNameMap: Record<string, string> = {
+      seed: '씨앗 단계',
+      tree: '나무 단계',
+      forest: '숲 단계',
+    };
+    const stageName = stageNameMap[String(stage)] || '';
+
     const response = await fetch(scriptUrl, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ ...sanitizedData, ...(pdfBase64 ? { pdfBase64 } : {}) }),
+      body: JSON.stringify({
+        ...sanitizedData,
+        stage,
+        stageName,
+        totalScoreNum,
+        ...(pdfBase64 ? { pdfBase64 } : {}),
+      }),
     });
 
     const data = await response.json();
