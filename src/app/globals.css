@@ -915,7 +915,6 @@ button {
   background: #f5f5f5;
   border-left: 4px solid #005F5F;
   border-radius: 8px;
-  margin: 0;
 }
 .recommend-label {
   font-size: 13px;
@@ -1026,8 +1025,12 @@ button {
   background: #F9FAFB;
   border-left: 4px solid #607D8B;
   padding: 15px 20px;
-  margin: 0;
   border-radius: 8px;
+}
+/* info-card 안에 있을 때 sub-section 사이 간격 보장 */
+.info-card > .legal-notice,
+.info-card > .recommend-section + .legal-notice {
+  margin-top: 16px;
 }
 
 .legal-notice p {
