@@ -876,16 +876,25 @@ button {
 .form-textarea {
   resize: vertical;
   min-height: 110px;
-  line-height: 1.5;
+  line-height: 1.6;
+  font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, 'Malgun Gothic', sans-serif;
+  font-size: 14px;
+  color: #333;
+}
+.form-textarea::placeholder {
+  font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, 'Malgun Gothic', sans-serif;
+  color: #b0b0b0;
+  font-size: 14px;
+  line-height: 1.6;
 }
 
-.privacy-sub {
-  display: block;
-  margin-top: 4px;
-  font-size: 12px;
-  color: #6b6b6b;
-  line-height: 1.5;
-  font-weight: 400;
+.privacy-marketing-note {
+  margin-top: 8px !important;
+  padding-top: 8px;
+  border-top: 1px dashed #d0cbc1;
+  font-size: 12px !important;
+  color: #6b6b6b !important;
+  line-height: 1.55;
 }
 
 /* 추천 상품 섹션 */

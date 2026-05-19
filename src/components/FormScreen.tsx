@@ -166,6 +166,9 @@ export default function FormScreen({
               <p><strong>수집 항목:</strong> 이름, 연락처</p>
               <p><strong>수집 목적:</strong> 은퇴설계 상담 서비스 제공</p>
               <p><strong>보유 기간:</strong> 상담 완료 후 1년</p>
+              <p className="privacy-marketing-note">
+                ※ 마케팅 수신 동의 시 — 문자·이메일로 안내, 동의 철회 시까지 보유. 거부 시에도 진단 결과 확인에는 영향이 없습니다.
+              </p>
             </div>
             <label className="privacy-label">
               <input
@@ -181,13 +184,7 @@ export default function FormScreen({
                 checked={marketingAgreed}
                 onChange={(e) => setMarketingAgreed(e.target.checked)}
               />
-              <span>
-                <strong>[선택] 위 고민에 대한 맞춤 자료 및 무료 세미나 안내를 받겠습니다</strong>
-                <br />
-                <small className="privacy-sub">
-                  마케팅 및 광고성 정보 전송 동의 · 수신: 문자·이메일 · 보유: 동의 철회 시까지 · 거부 시에도 진단 결과 확인에는 영향이 없습니다
-                </small>
-              </span>
+              <span>[선택] 위 고민에 대한 맞춤 자료 및 무료 세미나 안내 받기 (마케팅 및 광고성 정보 수신 동의)</span>
             </label>
           </div>
 
