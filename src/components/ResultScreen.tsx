@@ -20,6 +20,48 @@ interface Props {
   onRestart: () => void;
 }
 
+const STAGE_RECOMMENDATIONS: Record<Stage, { title: string; desc: string; products: string[] }> = {
+  seed: {
+    title: '기초 현금흐름 자산',
+    desc: '아직 은퇴 후 안정적인 현금흐름을 만들 자산이 부족한 단계입니다. 매달 들어오는 작은 수입원부터 차근차근 쌓아가는 것이 중요합니다.',
+    products: ['배당 ETF', '채권 ETF'],
+  },
+  tree: {
+    title: '포트폴리오 강화',
+    desc: '기본 자산은 갖춰져 있지만, 매달 현금흐름이 나오는 자산의 비중을 늘려야 할 단계입니다. 안정적인 인컴(income) 자산을 추가하는 것을 추천드립니다.',
+    products: ['리츠 (REITs)', '월배당 ETF', 'ABC투자'],
+  },
+  forest: {
+    title: '최적화·절세',
+    desc: '자산은 충분히 갖춰진 단계입니다. 이제는 더 모으는 것보다 세금 효율과 자산 보호 구조를 만드는 것이 중요합니다.',
+    products: ['IRP (개인형 퇴직연금)', '가족 신탁', 'ABC투자'],
+  },
+};
+
+const STAGE_LABEL: Record<Stage, string> = {
+  seed: '🌱 씨앗 단계',
+  tree: '🌳 나무 단계',
+  forest: '🌲 숲 단계',
+};
+
+function RecommendedProducts({ stage }: { stage: Stage }) {
+  const rec = STAGE_RECOMMENDATIONS[stage];
+  return (
+    <div className="recommend-section">
+      <div className="recommend-label">
+        {STAGE_LABEL[stage]} — 알아두면 좋은 상품
+      </div>
+      <div className="recommend-title">{rec.title}</div>
+      <div className="recommend-desc">{rec.desc}</div>
+      <div className="recommend-pills">
+        {rec.products.map((p) => (
+          <span key={p} className="recommend-pill">{p}</span>
+        ))}
+      </div>
+    </div>
+  );
+}
+
 function ResultMessage({ stage }: { stage: Stage }) {
   if (stage === 'seed') {
     return (
@@ -207,6 +249,7 @@ export default function ResultScreen({
       <ForestResult totalScore={totalScore} stage={stage} />
       <ResultMessage stage={stage} />
       <DetailedAnalysis groups={analysisGroups} />
+      <RecommendedProducts stage={stage} />
 
       <div className="legal-notice">
         <p><strong>{'\u{26A0}\u{FE0F}'} 유의사항</strong></p>

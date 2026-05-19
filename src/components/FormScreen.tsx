@@ -30,6 +30,7 @@ export default function FormScreen({
   const [marketingAgreed, setMarketingAgreed] = useState(false);
   const [name, setName] = useState('');
   const [phone, setPhone] = useState('');
+  const [concern, setConcern] = useState('');
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState('');
 
@@ -88,6 +89,7 @@ export default function FormScreen({
       score: `${totalScore}점 / 16점`,
       privacyAgreed: true,
       marketingAgreed,
+      concern: concern.trim(),
       answers,
       analysis: {
         excellent: analysis.excellent.join(', '),
@@ -179,7 +181,13 @@ export default function FormScreen({
                 checked={marketingAgreed}
                 onChange={(e) => setMarketingAgreed(e.target.checked)}
               />
-              <span>[선택] 마케팅 정보 수신 및 광고성 정보 전송 동의 (전화 및 문자)</span>
+              <span>
+                <strong>[선택] 위 고민에 대한 맞춤 자료 및 무료 세미나 안내를 받겠습니다</strong>
+                <br />
+                <small className="privacy-sub">
+                  마케팅 및 광고성 정보 전송 동의 · 수신: 문자·이메일 · 보유: 동의 철회 시까지 · 거부 시에도 진단 결과 확인에는 영향이 없습니다
+                </small>
+              </span>
             </label>
           </div>
 
@@ -203,6 +211,18 @@ export default function FormScreen({
               value={phone}
               onChange={(e) => setPhone(formatPhone(e.target.value))}
               required
+            />
+          </div>
+
+          <div className="form-group">
+            <label>지금 가장 큰 고민은 무엇인가요? (선택)</label>
+            <textarea
+              className="form-textarea"
+              placeholder={'예) 개인연금을 어떻게 운영해야 할지 모르겠어요\n예) 자녀 증여·상속세를 미리 어떻게 준비해야 할지 궁금해요\n예) 부족한 노후 현금흐름을 어디서 만들어야 할지 막막해요'}
+              value={concern}
+              onChange={(e) => setConcern(e.target.value)}
+              rows={5}
+              maxLength={500}
             />
           </div>
 

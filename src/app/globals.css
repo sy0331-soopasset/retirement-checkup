@@ -855,7 +855,8 @@ button {
 }
 
 .form-group input,
-.form-group select {
+.form-group select,
+.form-group textarea {
   width: 100%;
   padding: 12px 15px;
   border: 2px solid #d0cbc1;
@@ -866,9 +867,68 @@ button {
 }
 
 .form-group input:focus,
-.form-group select:focus {
+.form-group select:focus,
+.form-group textarea:focus {
   outline: none;
   border-color: #053c3c;
+}
+
+.form-textarea {
+  resize: vertical;
+  min-height: 110px;
+  line-height: 1.5;
+}
+
+.privacy-sub {
+  display: block;
+  margin-top: 4px;
+  font-size: 12px;
+  color: #6b6b6b;
+  line-height: 1.5;
+  font-weight: 400;
+}
+
+/* 추천 상품 섹션 */
+.recommend-section {
+  margin: 30px 0;
+  padding: 22px 20px;
+  background: #f5f5f5;
+  border-left: 4px solid #005F5F;
+  border-radius: 4px;
+}
+.recommend-label {
+  font-size: 13px;
+  font-weight: 700;
+  color: #005F5F;
+  letter-spacing: 0.5px;
+  margin-bottom: 6px;
+}
+.recommend-title {
+  font-size: 16px;
+  font-weight: 700;
+  color: #1a1a1a;
+  margin-bottom: 12px;
+}
+.recommend-desc {
+  font-size: 14px;
+  color: #444;
+  line-height: 1.6;
+  margin-bottom: 14px;
+}
+.recommend-pills {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+.recommend-pill {
+  display: inline-block;
+  background: #ffffff;
+  border: 1.5px solid #005F5F;
+  color: #005F5F;
+  padding: 6px 14px;
+  border-radius: 20px;
+  font-size: 13px;
+  font-weight: 600;
 }
 
 .checkbox-group {

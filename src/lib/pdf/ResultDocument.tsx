@@ -90,6 +90,31 @@ const shortBullets: Record<number, string> = {
   7: '세금 납부용 현금이 없으면 부동산을 급매각해야 하는 위기가 생깁니다.',
 };
 
+// ── 단계별 추천 상품 ──
+const stageRecommendations: Record<Stage, { title: string; desc: string; products: string[] }> = {
+  seed: {
+    title: '기초 현금흐름 자산',
+    desc: '아직 은퇴 후 안정적인 현금흐름을 만들 자산이 부족한 단계입니다. 매달 들어오는 작은 수입원부터 차근차근 쌓아가는 것이 중요합니다.',
+    products: ['배당 ETF', '채권 ETF'],
+  },
+  tree: {
+    title: '포트폴리오 강화',
+    desc: '기본 자산은 갖춰져 있지만, 매달 현금흐름이 나오는 자산의 비중을 늘려야 할 단계입니다. 안정적인 인컴 자산을 추가하는 것을 추천드립니다.',
+    products: ['리츠 (REITs)', '월배당 ETF', 'ABC투자'],
+  },
+  forest: {
+    title: '최적화·절세',
+    desc: '자산은 충분히 갖춰진 단계입니다. 이제는 더 모으는 것보다 세금 효율과 자산 보호 구조를 만드는 것이 중요합니다.',
+    products: ['IRP (개인형 퇴직연금)', '가족 신탁', 'ABC투자'],
+  },
+};
+
+const stageRecLabel: Record<Stage, string> = {
+  seed: '씨앗 단계',
+  tree: '나무 단계',
+  forest: '숲 단계',
+};
+
 // ── 우수 항목 짧은 코멘트 ──
 const excellentTexts: Record<number, string> = {
   0: '목표 생활비가 명확히 수립되어 있습니다. 은퇴 후 지출 구조 변화를 주기적으로 점검해 수치를 최신 상태로 유지하세요.',
@@ -253,6 +278,52 @@ const styles = StyleSheet.create({
   statusOk:      { fontSize: 9, color: C.primary,  fontWeight: 700 },
   statusCaution: { fontSize: 9, color: C.caution,  fontWeight: 700 },
   statusUrgent:  { fontSize: 9, color: C.urgent,   fontWeight: 700 },
+
+  // ── 추천 상품 ──
+  recommendBox: {
+    borderLeftWidth: 3,
+    borderLeftColor: C.primary,
+    backgroundColor: C.bg,
+    padding: 12,
+    marginBottom: 12,
+  },
+  recommendLabel: {
+    fontSize: 8,
+    fontWeight: 700,
+    color: C.primary,
+    letterSpacing: 0.8,
+    marginBottom: 4,
+  },
+  recommendTitle: {
+    fontSize: 11,
+    fontWeight: 700,
+    color: C.text,
+    marginBottom: 6,
+  },
+  recommendDesc: {
+    fontSize: 9,
+    color: C.text,
+    lineHeight: 1.6,
+    marginBottom: 8,
+  },
+  recommendPillsRow: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+  },
+  recommendPill: {
+    backgroundColor: C.white,
+    borderWidth: 1,
+    borderColor: C.primary,
+    paddingHorizontal: 8,
+    paddingVertical: 3,
+    marginRight: 5,
+    marginBottom: 5,
+  },
+  recommendPillText: {
+    fontSize: 9,
+    color: C.primary,
+    fontWeight: 700,
+  },
 
   // ── 우수 항목 블록 (전체 한 박스) ──
   excellentGroupBlock: {
@@ -515,6 +586,22 @@ export function ResultDocument({ totalScore, stage, analysisGroups, generatedAt 
             raw="지금 바로 할 수 있는 한 가지를 제안한다면, **현재 자산 목록을 한 장에 정리해보는 것**입니다. 부동산, 금융자산, 연금, 보험을 한 페이지에 모아놓고 나면 — 어디서 현금흐름이 나오고, 어디가 비어 있는지가 보이기 시작합니다. 그 다음 단계는 **전문가와 함께 현금흐름 지도를 완성하는 것**입니다."
             style={styles.sectionBoxTextSm}
           />
+        </View>
+
+        {/* 단계별 추천 상품 */}
+        <View style={styles.recommendBox} wrap={false}>
+          <Text style={styles.recommendLabel}>
+            {stageRecLabel[stage]} — 알아두면 좋은 상품
+          </Text>
+          <Text style={styles.recommendTitle}>{stageRecommendations[stage].title}</Text>
+          <Text style={styles.recommendDesc}>{stageRecommendations[stage].desc}</Text>
+          <View style={styles.recommendPillsRow}>
+            {stageRecommendations[stage].products.map((product) => (
+              <View key={product} style={styles.recommendPill}>
+                <Text style={styles.recommendPillText}>{product}</Text>
+              </View>
+            ))}
+          </View>
         </View>
 
         {/* 유의사항 */}

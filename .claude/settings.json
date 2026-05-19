@@ -1,0 +1,14 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(npx vercel *)",
+      "Bash(curl -s -o /dev/null -w \"%{http_code}\" \"https://retirement-checkup.vercel.app\")",
+      "Bash(curl -s -o /dev/null -w \"%{http_code}\" \"https://retirement-checkup-aom4049as-kims-projects-c8f23061.vercel.app\")",
+      "Bash(curl -sv \"https://retirement-checkup-sy0331-1226-kims-projects-c8f23061.vercel.app\")",
+      "Bash(curl -sv \"https://retirement-checkup-aom4049as-kims-projects-c8f23061.vercel.app/\")",
+      "Bash(curl -s \"https://api.vercel.com/v13/deployments/dpl_BMzYyLrPm2DjNoE3RH3qWAKBp4ot\" -H \"Authorization: Bearer vca_14PbFPIfamf2fdlngcR1eZwdVe6WQCO73C7H5zim0HIhPlNAjR3kNo8Q\" -o \"C:/Users/김세연/vdep.json\")",
+      "Bash(node -e \"const d=require\\('C:/Users/김세연/vdep.json'\\); console.log\\('status:', d.status, 'readyState:', d.readyState, 'errorMessage:', d.errorMessage\\);\")",
+      "Bash(node -e \"const d=require\\('C:/Users/김세연/vdep.json'\\); console.log\\('aliases:', JSON.stringify\\(d.alias || d.aliases\\)\\);\")"
+    ]
+  }
+}
