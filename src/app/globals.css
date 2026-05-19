@@ -900,13 +900,23 @@ button {
 /* 추가 정보 카드 (추천 상품 + 유의사항 컨테이너) */
 .info-card {
   background: white;
-  padding: 20px;
+  padding: 22px;
   border-radius: 12px;
   margin-bottom: 20px;
   box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
 }
 .info-card > * + * {
-  margin-top: 16px;
+  margin-top: 22px;
+  padding-top: 22px;
+  border-top: 1px solid #eaeaea;
+}
+/* 카드 안쪽 sub-section은 회색 배경 없이 콘텐츠만 표시 (흰 카드와 자연스럽게 합쳐짐) */
+.info-card .recommend-section,
+.info-card .legal-notice {
+  background: transparent !important;
+  padding: 4px 0 4px 16px !important;
+  border-radius: 0 !important;
+  margin: 0 !important;
 }
 
 /* 추천 상품 섹션 */
