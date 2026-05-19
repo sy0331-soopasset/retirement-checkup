@@ -249,13 +249,15 @@ export default function ResultScreen({
       <ForestResult totalScore={totalScore} stage={stage} />
       <ResultMessage stage={stage} />
       <DetailedAnalysis groups={analysisGroups} />
-      <RecommendedProducts stage={stage} />
 
-      <div className="legal-notice">
-        <p><strong>{'\u{26A0}\u{FE0F}'} 유의사항</strong></p>
-        <p>본 진단 결과는 일반적인 은퇴 준비 현황을 점검하기 위한 참고용이며, 개인별 상황에 따라 다를 수 있습니다.</p>
-        <p>보다 정확한 은퇴 설계를 위해 전문 상담사와 상담하시기 바랍니다.</p>
-        <p>진단 항목은 정기적으로 점검하고 변화된 생활 환경에 맞게 업데이트하시기를 권장합니다.</p>
+      <div className="info-card">
+        <RecommendedProducts stage={stage} />
+        <div className="legal-notice">
+          <p><strong>{'\u{26A0}\u{FE0F}'} 유의사항</strong></p>
+          <p>본 진단 결과는 일반적인 은퇴 준비 현황을 점검하기 위한 참고용이며, 개인별 상황에 따라 다를 수 있습니다.</p>
+          <p>보다 정확한 은퇴 설계를 위해 전문 상담사와 상담하시기 바랍니다.</p>
+          <p>진단 항목은 정기적으로 점검하고 변화된 생활 환경에 맞게 업데이트하시기를 권장합니다.</p>
+        </div>
       </div>
 
       <button

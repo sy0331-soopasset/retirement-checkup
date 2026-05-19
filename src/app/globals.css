@@ -897,13 +897,25 @@ button {
   line-height: 1.55;
 }
 
+/* 추가 정보 카드 (추천 상품 + 유의사항 컨테이너) */
+.info-card {
+  background: white;
+  padding: 20px;
+  border-radius: 12px;
+  margin-bottom: 20px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+}
+.info-card > * + * {
+  margin-top: 16px;
+}
+
 /* 추천 상품 섹션 */
 .recommend-section {
-  margin: 30px 0;
-  padding: 22px 20px;
+  padding: 16px 18px;
   background: #f5f5f5;
   border-left: 4px solid #005F5F;
-  border-radius: 4px;
+  border-radius: 8px;
+  margin: 0;
 }
 .recommend-label {
   font-size: 13px;
@@ -916,7 +928,7 @@ button {
   font-size: 16px;
   font-weight: 700;
   color: #1a1a1a;
-  margin-bottom: 12px;
+  margin-bottom: 10px;
 }
 .recommend-desc {
   font-size: 14px;
@@ -1014,8 +1026,12 @@ button {
   background: #F9FAFB;
   border-left: 4px solid #607D8B;
   padding: 15px 20px;
-  margin-bottom: 20px;
+  margin: 0;
   border-radius: 8px;
+}
+
+.info-card > .legal-notice {
+  margin: 0;
 }
 
 .legal-notice p {
