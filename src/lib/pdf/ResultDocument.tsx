@@ -95,17 +95,17 @@ const stageRecommendations: Record<Stage, { title: string; desc: string; product
   seed: {
     title: '기초 현금흐름 자산',
     desc: '아직 은퇴 후 안정적인 현금흐름을 만들 자산이 부족한 단계입니다. 매달 들어오는 작은 수입원부터 차근차근 쌓아가는 것이 중요합니다.',
-    products: ['배당 ETF', '채권 ETF'],
+    products: ['배당 ETF', '채권'],
   },
   tree: {
     title: '포트폴리오 강화',
     desc: '기본 자산은 갖춰져 있지만, 매달 현금흐름이 나오는 자산의 비중을 늘려야 할 단계입니다. 안정적인 인컴 자산을 추가하는 것을 추천드립니다.',
-    products: ['리츠 (REITs)', '월배당 ETF', 'ABC투자'],
+    products: ['리츠', '배당 ETF', 'ABC투자'],
   },
   forest: {
     title: '최적화·절세',
     desc: '자산은 충분히 갖춰진 단계입니다. 이제는 더 모으는 것보다 세금 효율과 자산 보호 구조를 만드는 것이 중요합니다.',
-    products: ['IRP (개인형 퇴직연금)', '가족 신탁', 'ABC투자'],
+    products: ['가족법인', 'ABC투자'],
   },
 };
 
