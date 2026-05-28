@@ -86,6 +86,9 @@ export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
 
+    // [디버그] 수신된 concern 값 확인
+    console.log('[CONCERN DEBUG] received concern:', JSON.stringify(body.concern));
+
     // PDF용 필드 추출 (sanitize 전에 분리)
     const { stage, totalScoreNum, analysisGroups, ...restBody } = body;
 
@@ -137,16 +140,21 @@ export async function POST(request: NextRequest) {
     };
     const stageName = stageNameMap[String(stage)] || '';
 
+    const payloadToAppsScript = {
+      ...sanitizedData,
+      stage,
+      stageName,
+      totalScoreNum,
+      ...(pdfBase64 ? { pdfBase64 } : {}),
+    };
+
+    // [디버그] Apps Script로 보내는 concern 값 확인
+    console.log('[CONCERN DEBUG] sending to Apps Script — concern:', JSON.stringify((payloadToAppsScript as { concern?: string }).concern));
+
     const response = await fetch(scriptUrl, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        ...sanitizedData,
-        stage,
-        stageName,
-        totalScoreNum,
-        ...(pdfBase64 ? { pdfBase64 } : {}),
-      }),
+      body: JSON.stringify(payloadToAppsScript),
     });
 
     const data = await response.json();
