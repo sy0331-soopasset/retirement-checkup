@@ -5,23 +5,9 @@ import type { AnalysisItem, Stage } from '@/lib/types';
 
 export const runtime = 'nodejs';
 
-// 서버 사이드 입력 검증
-function validateInput(data: Record<string, unknown>): string | null {
-  const name = String(data.name || '').trim();
-  const phone = String(data.phone || '').trim();
-  const email = String(data.email || '').trim();
+// 결과 화면에서 뒤늦게 마케팅 수신에 동의한 경우,
+// 시트의 동의 값을 갱신하고 전체 리포트 PDF + 전자책을 발송하기 위한 엔드포인트.
 
-  if (!name || name.length > 50) return '이름이 올바르지 않습니다.';
-  if (!/^01[0-9]-?\d{3,4}-?\d{4}$/.test(phone.replace(/\s/g, '')))
-    return '연락처가 올바르지 않습니다.';
-  if (!email) return '이메일을 입력해주세요.';
-  if (email.length > 100 || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email))
-    return '이메일이 올바르지 않습니다.';
-
-  return null;
-}
-
-// 간단한 서버 사이드 sanitization
 function sanitizeString(str: string): string {
   return str
     .replace(/</g, '&lt;')
@@ -31,20 +17,6 @@ function sanitizeString(str: string): string {
     .slice(0, 500);
 }
 
-function sanitizeObject(obj: Record<string, unknown>): Record<string, unknown> {
-  const result: Record<string, unknown> = {};
-  for (const [key, value] of Object.entries(obj)) {
-    if (typeof value === 'string') {
-      result[key] = sanitizeString(value);
-    } else if (typeof value === 'object' && value !== null) {
-      result[key] = sanitizeObject(value as Record<string, unknown>);
-    } else {
-      result[key] = value;
-    }
-  }
-  return result;
-}
-
 function formatDate(d: Date): string {
   const y = d.getFullYear();
   const m = String(d.getMonth() + 1).padStart(2, '0');
@@ -52,9 +24,8 @@ function formatDate(d: Date): string {
   return `${y}-${m}-${day}`;
 }
 
-// Rate limiting (in-memory, 프로세스 단위)
 const requestCounts = new Map<string, { count: number; resetAt: number }>();
-const RATE_LIMIT = 5; // 분당 최대 요청 수
+const RATE_LIMIT = 5;
 const WINDOW_MS = 60_000;
 
 function isRateLimited(ip: string): boolean {
@@ -70,8 +41,13 @@ function isRateLimited(ip: string): boolean {
   return entry.count > RATE_LIMIT;
 }
 
+const stageNameMap: Record<string, string> = {
+  seed: '씨앗 단계',
+  tree: '나무 단계',
+  forest: '숲 단계',
+};
+
 export async function POST(request: NextRequest) {
-  // Rate limiting
   const ip =
     request.headers.get('x-forwarded-for')?.split(',')[0]?.trim() ||
     request.headers.get('x-real-ip') ||
@@ -86,42 +62,43 @@ export async function POST(request: NextRequest) {
 
   try {
     const body = await request.json();
+    const { name, phone, email, stage, totalScoreNum, analysisGroups } = body;
 
-    // PDF용 필드 추출 (sanitize 전에 분리)
-    const { stage, totalScoreNum, analysisGroups, ...restBody } = body;
+    const cleanName = sanitizeString(String(name || ''));
+    const cleanPhone = sanitizeString(String(phone || ''));
+    const cleanEmail = sanitizeString(String(email || ''));
 
-    // 서버 사이드 입력 검증
-    const validationError = validateInput(restBody);
-    if (validationError) {
+    if (!cleanName || !/^01[0-9]-?\d{3,4}-?\d{4}$/.test(cleanPhone.replace(/\s/g, ''))) {
       return NextResponse.json(
-        { result: 'error', error: validationError },
+        { result: 'error', error: '신청 정보를 확인할 수 없습니다.' },
         { status: 400 }
       );
     }
 
-    // 입력 데이터 sanitize (구글 시트용 필드만)
-    const sanitizedData = sanitizeObject(restBody);
-
-    // PDF 생성 — 전체 리포트는 마케팅 동의자에게만 제공
-    const marketingAgreed = restBody.marketingAgreed === true;
+    // 전체 리포트 PDF 생성
     let pdfBase64: string | undefined;
-    if (marketingAgreed && stage && analysisGroups) {
+    if (stage && analysisGroups) {
       try {
         const pdfBuffer = await renderToBuffer(
           <ResultDocument
             totalScore={typeof totalScoreNum === 'number' ? totalScoreNum : 0}
             stage={stage as Stage}
-            analysisGroups={analysisGroups as { excellent: AnalysisItem[]; normal: AnalysisItem[]; lacking: AnalysisItem[] }}
+            analysisGroups={
+              analysisGroups as {
+                excellent: AnalysisItem[];
+                normal: AnalysisItem[];
+                lacking: AnalysisItem[];
+              }
+            }
             generatedAt={formatDate(new Date())}
           />
         );
         pdfBase64 = Buffer.from(pdfBuffer).toString('base64');
       } catch (err) {
-        console.error('PDF generation failed:', JSON.stringify(err, Object.getOwnPropertyNames(err)));
+        console.error('PDF generation failed:', err);
       }
     }
 
-    // Google Apps Script로 전송 (URL은 서버 환경변수에서만 접근)
     const scriptUrl = process.env.GOOGLE_SCRIPT_URL;
     if (!scriptUrl) {
       console.error('GOOGLE_SCRIPT_URL is not configured');
@@ -131,31 +108,29 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // 단계명 한글 변환 (Apps Script가 잘못 계산하는 문제 방지)
-    const stageNameMap: Record<string, string> = {
-      seed: '씨앗 단계',
-      tree: '나무 단계',
-      forest: '숲 단계',
-    };
-    const stageName = stageNameMap[String(stage)] || '';
-
     const response = await fetch(scriptUrl, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
-        ...sanitizedData,
+        action: 'marketingConsent',
+        name: cleanName,
+        phone: cleanPhone,
+        email: cleanEmail,
+        privacyAgreed: true,
+        marketingAgreed: true,
         stage,
-        stageName,
+        stageName: stageNameMap[String(stage)] || '',
         totalScoreNum,
-        reportType: marketingAgreed ? 'full' : 'simple',
+        reportType: 'full',
+        sendEbook: true,
         ...(pdfBase64 ? { pdfBase64 } : {}),
       }),
     });
 
-    const data = await response.json();
+    const data = await response.json().catch(() => ({ result: 'success' }));
     return NextResponse.json(data);
   } catch (error) {
-    console.error('Consultation API error:', error);
+    console.error('Marketing consent API error:', error);
     return NextResponse.json(
       { result: 'error', error: '서버 통신 중 오류가 발생했습니다.' },
       { status: 500 }

@@ -24,12 +24,12 @@ export default function IntroScreen({ onStart }: Props) {
       {/* 로고 */}
       <div className="ip-logo">
         <Image
-          src="/logo_transparent.png"
-          alt="숲파트너스 로고"
+          src="/logo_beige.png"
+          alt="숲파트너스 — 5060의 선택, 마음 편한 투자"
           width={200}
-          height={57}
+          height={51}
           priority
-          style={{ height: 'auto', filter: 'brightness(0) invert(1)' }}
+          style={{ height: 'auto' }}
         />
       </div>
 

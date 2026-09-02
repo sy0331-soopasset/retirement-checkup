@@ -21,6 +21,9 @@ export default function DiagnosisApp() {
   const [itemScores, setItemScores] = useState<number[]>([]);
   const [utmParams, setUtmParams] = useState<Record<string, string>>({});
   const [userName, setUserName] = useState('');
+  const [userEmail, setUserEmail] = useState('');
+  const [userPhone, setUserPhone] = useState('');
+  const [marketingAgreed, setMarketingAgreed] = useState(false);
 
   useEffect(() => {
     setUtmParams(captureUtmParams());
@@ -55,10 +58,16 @@ export default function DiagnosisApp() {
     }
   }, [currentQuestion, itemScores]);
 
-  const showLoading = useCallback((name: string) => {
-    setUserName(name);
-    setScreen('loading');
-  }, []);
+  const showLoading = useCallback(
+    (name: string, agreed: boolean, email: string, phone: string) => {
+      setUserName(name);
+      setUserEmail(email);
+      setUserPhone(phone);
+      setMarketingAgreed(agreed);
+      setScreen('loading');
+    },
+    []
+  );
 
   const showResult = useCallback(() => {
     setScreen('result');
@@ -71,6 +80,9 @@ export default function DiagnosisApp() {
     setUserAnswers([]);
     setItemScores([]);
     setUserName('');
+    setUserEmail('');
+    setUserPhone('');
+    setMarketingAgreed(false);
   }, []);
 
   const getStage = (): Stage => {
@@ -136,6 +148,9 @@ export default function DiagnosisApp() {
           stage={getStage()}
           analysisGroups={getAnalysisGroups()}
           userName={userName}
+          userEmail={userEmail}
+          userPhone={userPhone}
+          marketingAgreed={marketingAgreed}
           onRestart={restart}
         />
       )}

@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import Image from 'next/image';
 import type { Stage, AnalysisItem } from '@/lib/types';
+import { sendGAEvent } from '@/lib/analytics';
 import ForestResult from './ForestResult';
 import DetailedAnalysis from './DetailedAnalysis';
 
@@ -17,6 +18,9 @@ interface Props {
   stage: Stage;
   analysisGroups: AnalysisGroups;
   userName: string;
+  userEmail: string;
+  userPhone: string;
+  marketingAgreed: boolean;
   onRestart: () => void;
 }
 
@@ -190,9 +194,56 @@ export default function ResultScreen({
   stage,
   analysisGroups,
   userName,
+  userEmail,
+  userPhone,
+  marketingAgreed,
   onRestart,
 }: Props) {
   const [isGeneratingPdf, setIsGeneratingPdf] = useState(false);
+  const [unlocked, setUnlocked] = useState(marketingAgreed);
+  const [showUnlockPanel, setShowUnlockPanel] = useState(false);
+  const [unlocking, setUnlocking] = useState(false);
+  const [unlockError, setUnlockError] = useState('');
+
+  const handleMoreClick = () => {
+    setShowUnlockPanel(true);
+    sendGAEvent('result_more_click');
+  };
+
+  // 결과 화면에서 뒤늦게 마케팅 동의 → 서버에 반영 후 전체 공개
+  const handleUnlockConsent = async (checked: boolean) => {
+    if (!checked || unlocking) return;
+    setUnlocking(true);
+    setUnlockError('');
+
+    try {
+      const res = await fetch('/api/marketing-consent', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          name: userName,
+          phone: userPhone,
+          email: userEmail,
+          marketingAgreed: true,
+          stage,
+          totalScoreNum: totalScore,
+          analysisGroups,
+        }),
+      });
+
+      const data = await res.json().catch(() => ({ result: 'error' }));
+      if (data.result !== 'success') {
+        throw new Error(data.error || '동의 처리에 실패했습니다.');
+      }
+
+      sendGAEvent('marketing_consent_late');
+      setUnlocked(true);
+    } catch {
+      setUnlockError('동의 처리 중 오류가 발생했습니다. 잠시 후 다시 시도해주세요.');
+    } finally {
+      setUnlocking(false);
+    }
+  };
 
   const handleDownloadPdf = async () => {
     if (isGeneratingPdf) return;
@@ -240,25 +291,84 @@ export default function ResultScreen({
       <div className="result-logo">
         <Image
           src="/logo_transparent.png"
-          alt="숲파트너스 로고"
+          alt="숲파트너스 — 5060의 선택, 마음 편한 투자"
           width={150}
-          height={54}
+          height={38}
         />
       </div>
 
       <ForestResult totalScore={totalScore} stage={stage} />
       <ResultMessage stage={stage} />
-      <DetailedAnalysis groups={analysisGroups} />
 
-      <div className="info-card">
-        <RecommendedProducts stage={stage} />
-        <div className="legal-notice">
-          <p><strong>{'\u{26A0}\u{FE0F}'} 유의사항</strong></p>
-          <p>본 진단 결과는 일반적인 은퇴 준비 현황을 점검하기 위한 참고용이며, 개인별 상황에 따라 다를 수 있습니다.</p>
-          <p>보다 정확한 은퇴 설계를 위해 전문 상담사와 상담하시기 바랍니다.</p>
-          <p>진단 항목은 정기적으로 점검하고 변화된 생활 환경에 맞게 업데이트하시기를 권장합니다.</p>
-        </div>
-      </div>
+      {unlocked ? (
+        <>
+          <DetailedAnalysis groups={analysisGroups} />
+
+          <div className="info-card">
+            <RecommendedProducts stage={stage} />
+            <div className="legal-notice">
+              <p><strong>{'\u{26A0}\u{FE0F}'} 유의사항</strong></p>
+              <p>본 진단 결과는 일반적인 은퇴 준비 현황을 점검하기 위한 참고용이며, 개인별 상황에 따라 다를 수 있습니다.</p>
+              <p>보다 정확한 은퇴 설계를 위해 전문 상담사와 상담하시기 바랍니다.</p>
+              <p>진단 항목은 정기적으로 점검하고 변화된 생활 환경에 맞게 업데이트하시기를 권장합니다.</p>
+            </div>
+          </div>
+        </>
+      ) : (
+        <>
+          {/* 맛보기 — 상세 분석은 흐리게만 노출 */}
+          <div className="locked-preview">
+            <span className="locked-preview-badge">{'\u{1F512}'} 맛보기</span>
+            <div className="locked-preview-body" aria-hidden="true">
+              <DetailedAnalysis groups={analysisGroups} />
+            </div>
+            <div className="locked-preview-fade" />
+          </div>
+
+          {!showUnlockPanel && (
+            <button type="button" className="btn-more" onClick={handleMoreClick}>
+              더보기 {'\u{25BE}'}
+            </button>
+          )}
+
+          {showUnlockPanel && (
+            <div className="unlock-card">
+              <div className="unlock-icon">{'\u{1F4CB}'}</div>
+              <h3 className="unlock-title">자세한 진단 결과 확인이 가능합니다</h3>
+              <ul className="unlock-list">
+                <li>8개 영역 상세 분석</li>
+                <li>우선 조치 사항</li>
+                <li>단계별 맞춤 추천</li>
+                <li>결과 PDF 다운로드</li>
+              </ul>
+
+              <p className="unlock-guide">아래 동의하시면 전체를 보실 수 있습니다.</p>
+
+              <label className="unlock-check">
+                <input
+                  type="checkbox"
+                  checked={unlocked}
+                  disabled={unlocking}
+                  onChange={(e) => handleUnlockConsent(e.target.checked)}
+                />
+                <span>
+                  [동의] 상담, 맞춤 자료 및 무료 세미나 안내 받기
+                  <br />
+                  (마케팅 및 광고성 정보 수신동의)
+                </span>
+              </label>
+
+              <p className="unlock-benefit">
+                {'\u{1F381}'} 마케팅 동의를 체크하시면 <strong>전체 진단 결과</strong>와 함께
+                은퇴 준비에 필요한 <strong>전자책</strong>을 보내드립니다.
+              </p>
+
+              {unlocking && <p className="unlock-status">처리 중입니다...</p>}
+              {unlockError && <p className="form-error">{unlockError}</p>}
+            </div>
+          )}
+        </>
+      )}
 
       <button
         className="btn-restart"
@@ -268,15 +378,17 @@ export default function ResultScreen({
         다시 진단하기
       </button>
 
-      <button
-        type="button"
-        className="btn-download-pdf"
-        onClick={handleDownloadPdf}
-        disabled={isGeneratingPdf}
-        aria-busy={isGeneratingPdf}
-      >
-        {isGeneratingPdf ? 'PDF 생성 중...' : '\u{1F4C4} 결과 PDF 다운로드'}
-      </button>
+      {unlocked && (
+        <button
+          type="button"
+          className="btn-download-pdf"
+          onClick={handleDownloadPdf}
+          disabled={isGeneratingPdf}
+          aria-busy={isGeneratingPdf}
+        >
+          {isGeneratingPdf ? 'PDF 생성 중...' : '\u{1F4C4} 결과 PDF 다운로드'}
+        </button>
+      )}
 
       <footer className="footer">
         <p>&copy; 2026 주식회사 숲파트너스. All rights reserved.</p>

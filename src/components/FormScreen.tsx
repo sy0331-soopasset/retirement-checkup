@@ -5,7 +5,7 @@ import Image from 'next/image';
 import { questions } from '@/data/questions';
 import { feedbackMessages } from '@/data/feedback';
 import { validateConsultationForm } from '@/lib/validation';
-import { trackConversion } from '@/lib/analytics';
+import { trackConversion, sendGAEvent } from '@/lib/analytics';
 import type { Stage } from '@/lib/types';
 import ResultThumbnail from './ResultThumbnail';
 
@@ -15,7 +15,12 @@ interface Props {
   userAnswers: string[];
   itemScores: number[];
   utmParams: Record<string, string>;
-  onSubmitSuccess: (userName: string) => void;
+  onSubmitSuccess: (
+    userName: string,
+    marketingAgreed: boolean,
+    userEmail: string,
+    userPhone: string
+  ) => void;
 }
 
 export default function FormScreen({
@@ -30,9 +35,11 @@ export default function FormScreen({
   const [marketingAgreed, setMarketingAgreed] = useState(false);
   const [name, setName] = useState('');
   const [phone, setPhone] = useState('');
+  const [email, setEmail] = useState('');
   const [concern, setConcern] = useState('');
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState('');
+  const [showMarketingPrompt, setShowMarketingPrompt] = useState(false);
 
   const formatPhone = (value: string) => {
     const digits = value.replace(/\D/g, '').slice(0, 11);
@@ -41,7 +48,7 @@ export default function FormScreen({
     return `${digits.slice(0, 3)}-${digits.slice(3, 7)}-${digits.slice(7)}`;
   };
 
-  const handleSubmit = async (e: FormEvent) => {
+  const handleSubmit = (e: FormEvent) => {
     e.preventDefault();
     setError('');
 
@@ -50,12 +57,25 @@ export default function FormScreen({
       return;
     }
 
-    const validation = validateConsultationForm({ name, phone });
+    const validation = validateConsultationForm({ name, phone, email });
     if (!validation.valid) {
       setError(validation.error || '입력 값을 확인해주세요.');
       return;
     }
 
+    // 마케팅 미동의 시 전체 리포트 안내 팝업 노출
+    if (!marketingAgreed) {
+      setShowMarketingPrompt(true);
+      sendGAEvent('marketing_prompt_view');
+      return;
+    }
+
+    void submitForm(true);
+  };
+
+  const submitForm = async (withMarketing: boolean) => {
+    setShowMarketingPrompt(false);
+    setError('');
     setSubmitting(true);
 
     const answers: Record<string, string> = {};
@@ -86,9 +106,10 @@ export default function FormScreen({
     const formData = {
       name,
       phone,
+      email: email.trim(),
       score: `${totalScore}점 / 16점`,
       privacyAgreed: true,
-      marketingAgreed,
+      marketingAgreed: withMarketing,
       concern: concern.trim(),
       answers,
       analysis: {
@@ -119,7 +140,8 @@ export default function FormScreen({
 
       if (data.result === 'success') {
         trackConversion();
-        onSubmitSuccess(name);
+        sendGAEvent('lead_submit', { marketing_agreed: withMarketing ? 1 : 0 });
+        onSubmitSuccess(name, withMarketing, email.trim(), phone);
       } else {
         setError(data.error || '오류가 발생했습니다. 잠시 후 다시 시도해주세요.');
       }
@@ -135,9 +157,9 @@ export default function FormScreen({
       <div className="result-logo">
         <Image
           src="/logo_transparent.png"
-          alt="숲파트너스 로고"
+          alt="숲파트너스 — 5060의 선택, 마음 편한 투자"
           width={150}
-          height={54}
+          height={38}
         />
       </div>
 
@@ -163,13 +185,13 @@ export default function FormScreen({
           <div className="privacy-notice">
             <h4>개인정보 수집 및 마케팅 이용 안내</h4>
             <div className="privacy-detail">
-              <p><strong>수집 항목:</strong> 이름, 연락처</p>
+              <p><strong>수집 항목:</strong> 이름, 연락처, 이메일</p>
               <p><strong>수집 목적:</strong> 은퇴설계 상담 서비스 제공</p>
               <p><strong>보유 기간:</strong> 상담 완료 후 1년</p>
               <p className="privacy-marketing-note">
                 ※ 마케팅 수신 동의 시 전화·문자·이메일로 안내 드립니다. (동의 철회 시까지 보유)
                 <br />
-                ※ 거부 시에도 진단 결과 확인에는 영향이 없습니다.
+                ※ 미동의 시에도 진단은 가능하지만, 간단 보고서만 제공됩니다.
               </p>
             </div>
             <label className="privacy-label">
@@ -188,6 +210,10 @@ export default function FormScreen({
               />
               <span>[선택] 상담, 맞춤 자료 및 무료 세미나 안내 받기 (마케팅 및 광고성 정보 수신동의)</span>
             </label>
+            <p className="privacy-benefit-note">
+              {'\u{1F381}'} 마케팅 수신에 동의하시면 <strong>전체 진단 결과</strong>와 함께
+              은퇴 준비에 필요한 <strong>전자책</strong>을 보내드립니다.
+            </p>
           </div>
 
           <div className="form-group">
@@ -211,6 +237,21 @@ export default function FormScreen({
               onChange={(e) => setPhone(formatPhone(e.target.value))}
               required
             />
+          </div>
+
+          <div className="form-group">
+            <label>이메일 (필수)</label>
+            <input
+              type="email"
+              inputMode="email"
+              autoComplete="email"
+              placeholder="soop@example.com"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              required
+              maxLength={100}
+            />
+            <p className="form-field-hint">진단 결과와 전자책을 받으실 주소입니다.</p>
           </div>
 
           <div className="form-group">
@@ -250,6 +291,74 @@ export default function FormScreen({
           </a>
         </p>
       </footer>
+
+      {/* 마케팅 동의 유도 팝업 */}
+      {showMarketingPrompt && (
+        <div
+          className="modal-overlay"
+          role="dialog"
+          aria-modal="true"
+          aria-labelledby="marketing-prompt-title"
+        >
+          <div className="modal-card">
+            <div className="modal-icon">{'\u{1F512}'}</div>
+            <h3 className="modal-title" id="marketing-prompt-title">
+              마케팅 동의를 안 하시면
+              <br />
+              <strong>간단 보고서</strong>만 받을 수 있습니다
+            </h3>
+
+            <div className="modal-compare">
+              <div className="modal-compare-col modal-compare-col--limited">
+                <div className="modal-compare-head">간단 보고서</div>
+                <ul>
+                  <li>총점 &amp; 단계 결과</li>
+                  <li>단계별 요약 코멘트</li>
+                </ul>
+              </div>
+              <div className="modal-compare-col modal-compare-col--full">
+                <div className="modal-compare-head">전체 리포트</div>
+                <ul>
+                  <li>8개 영역 상세 분석</li>
+                  <li>우선 조치 사항</li>
+                  <li>단계별 맞춤 추천</li>
+                  <li>결과 PDF 다운로드</li>
+                  <li>은퇴 준비 전자책 발송</li>
+                </ul>
+              </div>
+            </div>
+
+            <p className="modal-note">
+              동의하시면 전체 진단 결과와 함께 은퇴 준비에 필요한 전자책을 보내드립니다.
+              (수신 거부는 언제든 가능합니다.)
+            </p>
+
+            <button
+              type="button"
+              className="btn-primary modal-btn-main"
+              onClick={() => {
+                setMarketingAgreed(true);
+                sendGAEvent('marketing_prompt_agree');
+                void submitForm(true);
+              }}
+              disabled={submitting}
+            >
+              동의하고 전체 리포트 받기
+            </button>
+            <button
+              type="button"
+              className="modal-btn-sub"
+              onClick={() => {
+                sendGAEvent('marketing_prompt_decline');
+                void submitForm(false);
+              }}
+              disabled={submitting}
+            >
+              괜찮아요, 간단 보고서만 받을게요
+            </button>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
