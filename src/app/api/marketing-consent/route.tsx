@@ -62,7 +62,7 @@ export async function POST(request: NextRequest) {
 
   try {
     const body = await request.json();
-    const { name, phone, email, stage, totalScoreNum, analysisGroups } = body;
+    const { name, phone, email, score, stage, totalScoreNum, analysisGroups } = body;
 
     const cleanName = sanitizeString(String(name || ''));
     const cleanPhone = sanitizeString(String(phone || ''));
@@ -116,6 +116,7 @@ export async function POST(request: NextRequest) {
         name: cleanName,
         phone: cleanPhone,
         email: cleanEmail,
+        score: typeof score === 'string' ? sanitizeString(score) : '',
         privacyAgreed: true,
         marketingAgreed: true,
         stage,

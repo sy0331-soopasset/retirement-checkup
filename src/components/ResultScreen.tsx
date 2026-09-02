@@ -226,6 +226,7 @@ export default function ResultScreen({
           email: userEmail,
           marketingAgreed: true,
           stage,
+          score: totalScore + '점 / 16점',
           totalScoreNum: totalScore,
           analysisGroups,
         }),

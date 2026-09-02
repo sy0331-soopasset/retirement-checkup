@@ -129,17 +129,45 @@ function handleMarketingConsent(data) {
   return jsonOut({ result: 'success' });
 }
 
+// ===== 단계별 정보 =====
+var STAGE_INFO = {
+  seed: {
+    emoji: '🌱',
+    name: '씨앗 단계',
+    line: '아직 늦지 않았습니다. 지금 정리하면 충분히 방향을 되돌릴 수 있는 시점입니다.'
+  },
+  tree: {
+    emoji: '🌳',
+    name: '나무 단계',
+    line: '기본은 이미 다져졌습니다. 이제 가지를 다듬어 숲을 준비할 차례입니다.'
+  },
+  forest: {
+    emoji: '🌲',
+    name: '숲 단계',
+    line: '잘 준비된 자산일수록, 지키는 전략에 따라 격차가 벌어집니다.'
+  }
+};
+
+function getStageInfo(stage, score) {
+  if (STAGE_INFO[stage]) return STAGE_INFO[stage];
+  if (score <= 5) return STAGE_INFO.seed;
+  if (score <= 11) return STAGE_INFO.tree;
+  return STAGE_INFO.forest;
+}
+
 // ===== 신청자에게 결과 + 전자책 발송 =====
 function sendUserReport(data, stageLabel) {
   if (!isValidEmail(data.email)) return;
 
+  var info = getStageInfo(data.stage, Number(data.totalScoreNum));
+  var name = data.name;
   var attachments = [];
 
   if (data.pdfBase64) {
     attachments.push(Utilities.newBlob(
       Utilities.base64Decode(data.pdfBase64),
       'application/pdf',
-      data.name + '님_은퇴준비체크업_결과.pdf'
+      name + '님_은퇴준비체크업_결과.pdf'
     ));
   }
 
@@ -151,47 +179,138 @@ function sendUserReport(data, stageLabel) {
     }
   }
 
-  var fileList = '';
-  if (attachments.length > 0) {
-    fileList = '<ul style="line-height:1.9;color:#333;padding-left:20px;margin:12px 0;">';
-    if (data.pdfBase64) fileList += '<li>은퇴준비 체크업 상세 결과 리포트</li>';
-    if (EBOOK_FILE_ID) fileList += '<li>은퇴 준비에 필요한 전자책</li>';
-    fileList += '</ul>';
+  // 첨부 자료 목록
+  function fileItem(icon, title, desc) {
+    return '<table role="presentation" cellpadding="0" cellspacing="0" border="0" width="100%" style="margin-bottom:8px;">' +
+      '<tr>' +
+        '<td width="44" valign="top" style="padding:12px 0 12px 14px;font-size:20px;line-height:1;">' + icon + '</td>' +
+        '<td valign="top" style="padding:12px 14px 12px 0;">' +
+          '<div style="font-size:14px;font-weight:bold;color:#1a1a1a;line-height:1.5;">' + title + '</div>' +
+          '<div style="font-size:12px;color:#7a7a7a;line-height:1.5;margin-top:2px;">' + desc + '</div>' +
+        '</td>' +
+      '</tr>' +
+    '</table>';
   }
 
+  var fileSection = '';
+  if (attachments.length > 0) {
+    var items = '';
+    if (data.pdfBase64) {
+      items += fileItem('📄', '은퇴준비 체크업 상세 결과 리포트',
+                        '8개 영역별 분석과 우선 조치 사항이 담겨 있습니다');
+    }
+    if (EBOOK_FILE_ID) {
+      items += fileItem('📗', '은퇴 준비 가이드 전자책',
+                        '노후 현금흐름과 절세 전략을 정리했습니다');
+    }
+    fileSection =
+      '<tr><td style="padding:26px 28px 0;">' +
+        '<div style="font-size:13px;font-weight:bold;color:#053c3c;letter-spacing:0.3px;margin-bottom:10px;">' +
+          '함께 보내드린 자료' +
+        '</div>' +
+        '<div style="background-color:#f7f7f5;border:1px solid #e6e4de;border-radius:10px;padding:4px 0;">' +
+          items +
+        '</div>' +
+      '</td></tr>';
+  }
+
+  var scoreRow = data.score
+    ? '<div style="font-size:14px;color:#4a7a6e;margin-top:6px;">' + data.score + '</div>'
+    : '';
+
+  var font = 'Apple SD Gothic Neo,Malgun Gothic,dotum,sans-serif';
+
   var htmlBody =
-    '<div style="font-family:Malgun Gothic,dotum,sans-serif;max-width:600px;margin:0 auto;padding:24px;border:1px solid #ddd;border-radius:12px;">' +
-      '<h2 style="color:#053c3c;border-bottom:2px solid #053c3c;padding-bottom:12px;margin-top:0;">' +
-        '🌳 ' + data.name + '님의 은퇴준비 진단 결과' +
-      '</h2>' +
-      '<p style="line-height:1.8;color:#333;">' +
-        '안녕하세요, ' + data.name + '님.<br>' +
-        '숲파트너스 은퇴준비 체크리스트를 이용해 주셔서 감사합니다.' +
-      '</p>' +
-      '<div style="background:#eef5f2;border:1px solid #9dc0b5;border-radius:10px;padding:18px;margin:20px 0;text-align:center;">' +
-        '<div style="font-size:13px;color:#0a4a44;font-weight:bold;letter-spacing:0.5px;">진단 결과</div>' +
-        '<div style="font-size:22px;color:#053c3c;font-weight:bold;margin-top:6px;">' + stageLabel + '</div>' +
-      '</div>' +
-      '<p style="line-height:1.8;color:#333;margin-bottom:0;">첨부된 파일을 확인해 주세요.</p>' +
-      fileList +
-      '<p style="line-height:1.8;color:#333;">' +
-        '더 자세한 상담이 필요하시면 언제든 편하게 연락 주세요.<br>' +
-        '전문 상담사가 ' + data.name + '님의 상황에 맞는 방향을 함께 정리해 드리겠습니다.' +
-      '</p>' +
-      '<div style="margin-top:24px;text-align:center;">' +
-        '<a href="https://www.soop-partners.com" style="background-color:#053c3c;color:#fff;padding:12px 24px;text-decoration:none;border-radius:6px;font-size:14px;display:inline-block;">숲파트너스 홈페이지</a>' +
-      '</div>' +
-      '<div style="margin-top:28px;padding-top:16px;border-top:1px solid #eee;font-size:12px;color:#888;line-height:1.6;">' +
-        '주식회사 숲파트너스 | 대표이사: 조경석<br>' +
-        '서울시 서초구 서초대로 60길 18 6층 (교대 정인빌딩)<br><br>' +
-        '본 메일은 마케팅 정보 수신에 동의하신 분께 발송됩니다.<br>' +
-        '수신을 원하지 않으시면 회신으로 알려주시면 즉시 처리해 드립니다.' +
-      '</div>' +
-    '</div>';
+    '<table role="presentation" cellpadding="0" cellspacing="0" border="0" width="100%" style="background-color:#f2f1ee;margin:0;padding:24px 12px;">' +
+    '<tr><td align="center">' +
+
+      '<table role="presentation" cellpadding="0" cellspacing="0" border="0" width="600" style="max-width:600px;width:100%;background-color:#ffffff;border-radius:14px;overflow:hidden;">' +
+
+        // 브랜드 헤더
+        '<tr><td align="center" style="background-color:#053c3c;padding:28px 24px;">' +
+          '<img src="https://retirement-checkup.vercel.app/logo_beige.png" alt="숲파트너스" width="180" ' +
+            'style="display:block;width:180px;max-width:60%;height:auto;border:0;outline:none;">' +
+        '</td></tr>' +
+
+        // 인사
+        '<tr><td style="padding:34px 28px 0;font-family:' + font + ';">' +
+          '<div style="font-size:13px;color:#0a5555;font-weight:bold;letter-spacing:0.5px;margin-bottom:8px;">' +
+            '은퇴준비 체크업 결과' +
+          '</div>' +
+          '<div style="font-size:22px;line-height:1.45;color:#1a1a1a;font-weight:bold;margin-bottom:16px;">' +
+            name + '님의 진단 결과가<br>도착했습니다' +
+          '</div>' +
+          '<div style="font-size:15px;line-height:1.8;color:#5a5a5a;">' +
+            '안녕하세요, ' + name + '님.<br>' +
+            '숲파트너스 은퇴준비 체크리스트를 이용해 주셔서 감사합니다.' +
+          '</div>' +
+        '</td></tr>' +
+
+        // 결과 카드
+        '<tr><td style="padding:22px 28px 0;font-family:' + font + ';">' +
+          '<table role="presentation" cellpadding="0" cellspacing="0" border="0" width="100%" ' +
+            'style="background-color:#eef5f2;border:1px solid #cfe0d8;border-radius:12px;">' +
+            '<tr><td align="center" style="padding:26px 22px;">' +
+              '<div style="font-size:40px;line-height:1;margin-bottom:12px;">' + info.emoji + '</div>' +
+              '<div style="font-size:11px;color:#5b8378;font-weight:bold;letter-spacing:1.5px;margin-bottom:6px;">' +
+                '진단 결과' +
+              '</div>' +
+              '<div style="font-size:24px;color:#053c3c;font-weight:bold;line-height:1.3;">' + info.name + '</div>' +
+              scoreRow +
+              '<div style="margin-top:16px;padding-top:16px;border-top:1px solid #cfe0d8;font-size:14px;color:#3d6b60;line-height:1.7;">' +
+                info.line +
+              '</div>' +
+            '</td></tr>' +
+          '</table>' +
+        '</td></tr>' +
+
+        // 첨부 자료
+        fileSection +
+
+        // 상담 안내
+        '<tr><td style="padding:28px 28px 0;font-family:' + font + ';">' +
+          '<div style="font-size:15px;line-height:1.8;color:#5a5a5a;">' +
+            '더 자세한 상담이 필요하시면 언제든 편하게 연락 주세요.<br>' +
+            '전문 상담사가 ' + name + '님의 상황에 맞는 방향을<br>함께 정리해 드리겠습니다.' +
+          '</div>' +
+        '</td></tr>' +
+
+        // CTA
+        '<tr><td align="center" style="padding:24px 28px 4px;">' +
+          '<table role="presentation" cellpadding="0" cellspacing="0" border="0">' +
+            '<tr><td align="center" style="background-color:#053c3c;border-radius:8px;">' +
+              '<a href="https://www.soop-partners.com" target="_blank" ' +
+                'style="display:inline-block;padding:15px 34px;font-family:' + font + ';' +
+                'font-size:15px;font-weight:bold;color:#ffffff;text-decoration:none;">' +
+                '상담 문의하기' +
+              '</a>' +
+            '</td></tr>' +
+          '</table>' +
+        '</td></tr>' +
+
+        // 푸터
+        '<tr><td style="padding:28px;">' +
+          '<div style="border-top:1px solid #ececea;padding-top:20px;font-family:' + font + ';' +
+            'font-size:12px;color:#9a9a9a;line-height:1.75;">' +
+            '<a href="https://www.soop-partners.com" target="_blank" style="color:#9a9a9a;text-decoration:none;">' +
+              '주식회사 숲파트너스 &nbsp;|&nbsp; 대표이사 조경석<br>' +
+              '서울시 서초구 서초대로 60길 18 6층 (교대 정인빌딩)' +
+            '</a>' +
+            '<div style="margin-top:12px;color:#b0b0b0;">' +
+              '본 메일은 마케팅 정보 수신에 동의하신 분께 발송됩니다.<br>' +
+              '수신을 원하지 않으시면 회신으로 알려주시면 즉시 처리해 드립니다.' +
+            '</div>' +
+          '</div>' +
+        '</td></tr>' +
+
+      '</table>' +
+
+    '</td></tr>' +
+    '</table>';
 
   var options = {
     to: data.email,
-    subject: '[숲파트너스] ' + data.name + '님의 은퇴준비 진단 결과입니다',
+    subject: '[숲파트너스] ' + name + '님의 은퇴준비 진단 결과입니다',
     htmlBody: htmlBody,
     name: SENDER_NAME
   };
@@ -291,12 +410,8 @@ function getAnswerNum(text) {
 }
 
 function getStageLabel(stage, score) {
-  if (stage === 'seed') return '🌱 씨앗 단계';
-  if (stage === 'tree') return '🌳 나무 단계';
-  if (stage === 'forest') return '🌲 숲 단계';
-  if (score <= 5) return '🌱 씨앗 단계';
-  if (score <= 11) return '🌳 나무 단계';
-  return '🌲 숲 단계';
+  var info = getStageInfo(stage, score);
+  return info.emoji + ' ' + info.name;
 }
 
 function jsonOut(obj) {
