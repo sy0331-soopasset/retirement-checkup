@@ -4,6 +4,9 @@ import { ResultDocument } from '@/lib/pdf/ResultDocument';
 import type { AnalysisItem, Stage } from '@/lib/types';
 
 export const runtime = 'nodejs';
+// PDF 생성 + Apps Script 메일 발송까지 최대 10초를 넘길 수 있어
+// 기본 제한(10s)으로는 504 가 발생한다.
+export const maxDuration = 60;
 
 // 서버 사이드 입력 검증
 function validateInput(data: Record<string, unknown>): string | null {

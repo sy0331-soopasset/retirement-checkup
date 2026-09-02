@@ -4,6 +4,9 @@ import { ResultDocument } from '@/lib/pdf/ResultDocument';
 import type { AnalysisItem, Stage } from '@/lib/types';
 
 export const runtime = 'nodejs';
+// PDF 생성 + Apps Script 메일 발송까지 최대 10초를 넘길 수 있어
+// 기본 제한(10s)으로는 504 가 발생한다.
+export const maxDuration = 60;
 
 // 결과 화면에서 뒤늦게 마케팅 수신에 동의한 경우,
 // 시트의 동의 값을 갱신하고 전체 리포트 PDF + 전자책을 발송하기 위한 엔드포인트.
