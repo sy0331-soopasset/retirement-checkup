@@ -20,9 +20,9 @@ export default function QuestionScreen({ question, currentIndex, totalCount, onA
         <div className="logo-header">
           <Image
             src="/logo_transparent.png"
-            alt="숲파트너스 로고"
+            alt="숲파트너스 — 5060의 선택, 마음 편한 투자"
             width={280}
-            height={100}
+            height={71}
             priority
           />
         </div>
