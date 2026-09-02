@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, type FormEvent } from 'react';
+import { useState, useRef, useCallback, type FormEvent } from 'react';
 import Image from 'next/image';
 import { questions } from '@/data/questions';
 import { feedbackMessages } from '@/data/feedback';
@@ -8,6 +8,7 @@ import { validateConsultationForm } from '@/lib/validation';
 import { trackConversion, sendGAEvent } from '@/lib/analytics';
 import type { Stage } from '@/lib/types';
 import ResultThumbnail from './ResultThumbnail';
+import LoadingScreen from './LoadingScreen';
 
 interface Props {
   totalScore: number;
@@ -38,8 +39,22 @@ export default function FormScreen({
   const [email, setEmail] = useState('');
   const [concern, setConcern] = useState('');
   const [submitting, setSubmitting] = useState(false);
+  const [submitDone, setSubmitDone] = useState(false);
   const [error, setError] = useState('');
   const [showMarketingPrompt, setShowMarketingPrompt] = useState(false);
+  const pendingRef = useRef<{
+    name: string;
+    marketing: boolean;
+    email: string;
+    phone: string;
+  } | null>(null);
+
+  // 로딩 애니메이션과 서버 응답이 모두 끝났을 때만 결과로 넘어간다
+  const handleLoadingComplete = useCallback(() => {
+    const pending = pendingRef.current;
+    if (!pending) return;
+    onSubmitSuccess(pending.name, pending.marketing, pending.email, pending.phone);
+  }, [onSubmitSuccess]);
 
   const formatPhone = (value: string) => {
     const digits = value.replace(/\D/g, '').slice(0, 11);
@@ -141,16 +156,27 @@ export default function FormScreen({
       if (data.result === 'success') {
         trackConversion();
         sendGAEvent('lead_submit', { marketing_agreed: withMarketing ? 1 : 0 });
-        onSubmitSuccess(name, withMarketing, email.trim(), phone);
+        pendingRef.current = {
+          name,
+          marketing: withMarketing,
+          email: email.trim(),
+          phone,
+        };
+        setSubmitDone(true);
       } else {
         setError(data.error || '오류가 발생했습니다. 잠시 후 다시 시도해주세요.');
+        setSubmitting(false);
       }
     } catch {
       setError('서버 통신 중 오류가 발생했습니다.');
-    } finally {
       setSubmitting(false);
     }
   };
+
+  // 제출과 동시에 로딩 화면으로 전환 — 통신은 그 뒤에서 계속된다
+  if (submitting) {
+    return <LoadingScreen ready={submitDone} onComplete={handleLoadingComplete} />;
+  }
 
   return (
     <div className="screen">

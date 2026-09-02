@@ -8,10 +8,9 @@ import { captureUtmParams, sendGAEvent } from '@/lib/analytics';
 import IntroScreen from './IntroScreen';
 import QuestionScreen from './QuestionScreen';
 import FormScreen from './FormScreen';
-import LoadingScreen from './LoadingScreen';
 import ResultScreen from './ResultScreen';
 
-type Screen = 'intro' | 'question' | 'form' | 'loading' | 'result';
+type Screen = 'intro' | 'question' | 'form' | 'result';
 
 export default function DiagnosisApp() {
   const [screen, setScreen] = useState<Screen>('intro');
@@ -58,20 +57,17 @@ export default function DiagnosisApp() {
     }
   }, [currentQuestion, itemScores]);
 
-  const showLoading = useCallback(
+  // FormScreen 이 로딩 애니메이션까지 끝낸 뒤 호출한다
+  const showResult = useCallback(
     (name: string, agreed: boolean, email: string, phone: string) => {
       setUserName(name);
       setUserEmail(email);
       setUserPhone(phone);
       setMarketingAgreed(agreed);
-      setScreen('loading');
+      setScreen('result');
     },
     []
   );
-
-  const showResult = useCallback(() => {
-    setScreen('result');
-  }, []);
 
   const restart = useCallback(() => {
     setScreen('intro');
@@ -134,12 +130,8 @@ export default function DiagnosisApp() {
           userAnswers={userAnswers}
           itemScores={itemScores}
           utmParams={utmParams}
-          onSubmitSuccess={showLoading}
+          onSubmitSuccess={showResult}
         />
-      )}
-
-      {screen === 'loading' && (
-        <LoadingScreen onComplete={showResult} />
       )}
 
       {screen === 'result' && (
