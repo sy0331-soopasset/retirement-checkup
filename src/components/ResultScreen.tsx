@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import Image from 'next/image';
 import type { Stage, AnalysisItem } from '@/lib/types';
 import { sendGAEvent } from '@/lib/analytics';
@@ -202,20 +202,19 @@ export default function ResultScreen({
   const [isGeneratingPdf, setIsGeneratingPdf] = useState(false);
   const [unlocked, setUnlocked] = useState(marketingAgreed);
   const [showUnlockPanel, setShowUnlockPanel] = useState(false);
-  const [unlocking, setUnlocking] = useState(false);
-  const [unlockError, setUnlockError] = useState('');
+  const [consentFailed, setConsentFailed] = useState(false);
+  const [justUnlocked, setJustUnlocked] = useState(false);
+  const revealRef = useRef<HTMLDivElement>(null);
 
   const handleMoreClick = () => {
     setShowUnlockPanel(true);
     sendGAEvent('result_more_click');
   };
 
-  // 결과 화면에서 뒤늦게 마케팅 동의 → 서버에 반영 후 전체 공개
-  const handleUnlockConsent = async (checked: boolean) => {
-    if (!checked || unlocking) return;
-    setUnlocking(true);
-    setUnlockError('');
-
+  // 동의 기록은 백그라운드로 보내고, 화면은 즉시 공개한다.
+  // 서버 왕복(PDF 생성 + Apps Script)을 기다리면 3초 넘게 아무 반응이 없어
+  // 클릭이 먹혔는지 알 수 없다.
+  const sendConsent = async () => {
     try {
       const res = await fetch('/api/marketing-consent', {
         method: 'POST',
@@ -233,18 +232,34 @@ export default function ResultScreen({
       });
 
       const data = await res.json().catch(() => ({ result: 'error' }));
-      if (data.result !== 'success') {
-        throw new Error(data.error || '동의 처리에 실패했습니다.');
-      }
-
-      sendGAEvent('marketing_consent_late');
-      setUnlocked(true);
+      if (data.result !== 'success') throw new Error();
     } catch {
-      setUnlockError('동의 처리 중 오류가 발생했습니다. 잠시 후 다시 시도해주세요.');
-    } finally {
-      setUnlocking(false);
+      setConsentFailed(true);
     }
   };
+
+  const handleUnlockConsent = (checked: boolean) => {
+    if (!checked || unlocked) return;
+    setConsentFailed(false);
+    setUnlocked(true);
+    setJustUnlocked(true);
+    sendGAEvent('marketing_consent_late');
+    void sendConsent();
+  };
+
+  const retryConsent = () => {
+    setConsentFailed(false);
+    void sendConsent();
+  };
+
+  // 공개 직후 새로 드러난 영역으로 부드럽게 이동
+  useEffect(() => {
+    if (!justUnlocked) return;
+    const id = window.setTimeout(() => {
+      revealRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }, 80);
+    return () => window.clearTimeout(id);
+  }, [justUnlocked]);
 
   const handleDownloadPdf = async () => {
     if (isGeneratingPdf) return;
@@ -302,7 +317,18 @@ export default function ResultScreen({
       <ResultMessage stage={stage} />
 
       {unlocked ? (
-        <>
+        <div ref={revealRef} className={justUnlocked ? 'reveal-in' : undefined}>
+          {consentFailed && (
+            <div className="consent-retry">
+              <p>
+                동의 내용을 저장하지 못했습니다. 결과 메일과 자료 발송이 누락될 수 있습니다.
+              </p>
+              <button type="button" onClick={retryConsent}>
+                다시 시도
+              </button>
+            </div>
+          )}
+
           <DetailedAnalysis groups={analysisGroups} />
 
           <div className="info-card">
@@ -314,7 +340,7 @@ export default function ResultScreen({
               <p>진단 항목은 정기적으로 점검하고 변화된 생활 환경에 맞게 업데이트하시기를 권장합니다.</p>
             </div>
           </div>
-        </>
+        </div>
       ) : (
         <>
           {/* 맛보기 — 상세 분석은 흐리게만 노출 */}
@@ -349,7 +375,6 @@ export default function ResultScreen({
                 <input
                   type="checkbox"
                   checked={unlocked}
-                  disabled={unlocking}
                   onChange={(e) => handleUnlockConsent(e.target.checked)}
                 />
                 <span>
@@ -364,8 +389,6 @@ export default function ResultScreen({
                 은퇴 준비에 필요한 <strong>전자책</strong>을 보내드립니다.
               </p>
 
-              {unlocking && <p className="unlock-status">처리 중입니다...</p>}
-              {unlockError && <p className="form-error">{unlockError}</p>}
             </div>
           )}
         </>

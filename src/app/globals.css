@@ -1660,11 +1660,16 @@ button {
 }
 
 .unlock-check input {
-  width: 20px;
-  height: 20px;
+  width: 22px;
+  height: 22px;
   margin-top: 1px;
   flex-shrink: 0;
   cursor: pointer;
+  accent-color: #053c3c;
+}
+
+.unlock-check:active {
+  background: #e3efe9;
 }
 
 .unlock-check span {
@@ -1693,4 +1698,56 @@ button {
 @media (max-width: 380px) {
   .modal-compare { grid-template-columns: 1fr; }
   .modal-title { font-size: 17px; }
+}
+
+/* ===== 전체 공개 시 등장 ===== */
+@keyframes reveal-in {
+  from { opacity: 0; transform: translateY(10px); }
+  to   { opacity: 1; transform: none; }
+}
+
+.reveal-in {
+  animation: reveal-in 0.42s ease-out both;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .reveal-in { animation: none; }
+}
+
+/* ===== 동의 저장 실패 안내 ===== */
+.consent-retry {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+  background: #fdf3f2;
+  border: 1px solid #e8c4bf;
+  border-radius: 10px;
+  padding: 14px 16px;
+  margin-bottom: 16px;
+}
+
+.consent-retry p {
+  flex: 1 1 200px;
+  margin: 0;
+  font-size: 13px;
+  line-height: 1.6;
+  color: #a03c2a;
+}
+
+.consent-retry button {
+  flex-shrink: 0;
+  padding: 9px 18px;
+  background: #b4472a;
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  font-size: 13px;
+  font-weight: 700;
+  font-family: 'Pretendard', inherit;
+  cursor: pointer;
+}
+
+.consent-retry button:hover {
+  background: #963a21;
 }
